@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.cafedroid.bingo_android">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -12,14 +13,19 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true"
+        tools:targetApi="m">
+        <activity android:name=".NameActivity" />
         <activity android:name=".GameActivity" />
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-                <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <intent-filter>
+
+                <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
@@ -27,8 +33,8 @@
                     android:host="bingo.cafedroid.biz"
                     android:scheme="https" />
                 <data
-                    android:host="d88b79a2.ngrok.io"
-                    android:scheme="https" />
+                    android:host="1d98a8b0.ngrok.io"
+                    android:scheme="http" />
             </intent-filter>
         </activity>
     </application>

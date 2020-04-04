@@ -1,16 +1,24 @@
 package com.cafedroid.bingo_android
 
+import android.app.Activity
 import android.content.Intent
+import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import com.androidnetworking.AndroidNetworking
-import com.androidnetworking.error.ANError
-import com.androidnetworking.interfaces.ParsedRequestListener
-import com.github.nkzawa.socketio.client.IO
 import kotlinx.android.synthetic.main.activity_main.*
+import org.greenrobot.eventbus.EventBus
+import org.greenrobot.eventbus.Subscribe
+import org.greenrobot.eventbus.ThreadMode
+import org.json.JSONObject
 
 class MainActivity : AppCompatActivity() {
+
+    companion object {
+        const val CREATE_ROOM_REQUEST = 1000
+        const val JOIN_ROOM_REQUEST = 1001
+    }
+
+    private var gameId: String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -20,26 +28,13 @@ class MainActivity : AppCompatActivity() {
 
     private fun initViews() {
         btn_create.setOnClickListener {
-            if (validateInput()) {
-                createRoom()
-            }
+            if (validateInput()) createRoom()
         }
     }
 
     private fun createRoom() {
-        AndroidNetworking.post(BASE_URL + ApiEndpoints.GAME + ApiEndpoints.CREATE)
-            .addBodyParameter(ApiConstants.NAME, et_room.text.toString())
-            .addBodyParameter(ApiConstants.USER, et_user.text.toString())
-            .build().getAsObject(GameRoom::class.java, object : ParsedRequestListener<GameRoom> {
-                override fun onResponse(response: GameRoom?) {
-                    ActiveGameRoom.activeRoom = response
-                    proceedToActiveRoom()
-                }
 
-                override fun onError(anError: ANError?) {
-                    anError?.printStackTrace()
-                }
-            })
+        startActivityForResult(Intent(this, NameActivity::class.java), CREATE_ROOM_REQUEST)
     }
 
     private fun proceedToActiveRoom() {
@@ -48,5 +43,59 @@ class MainActivity : AppCompatActivity() {
 
     private fun validateInput(): Boolean {
         return et_room.text.toString().isNotBlank() && et_user.text.toString().isNotBlank()
+    }
+
+    override fun onStart() {
+        super.onStart()
+        EventBus.getDefault().register(this)
+        intent.data?.lastPathSegment?.let {
+            if (gameId.isBlank()) {
+                gameId = it
+                startActivityForResult(Intent(this, NameActivity::class.java), JOIN_ROOM_REQUEST)
+            }
+        }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        EventBus.getDefault().unregister(this)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when (requestCode) {
+            JOIN_ROOM_REQUEST -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    val user = data?.extras?.getString(NameActivity.USER_KEY) ?: Build.MODEL
+                    BingoSocket.socket?.let {
+                        it.emit("join", JSONObject().apply {
+                            put(ApiConstants.ID, gameId)
+                            put(ApiConstants.USER, user)
+                        })
+                    }
+                }
+            }
+            CREATE_ROOM_REQUEST -> {
+                if (resultCode == Activity.RESULT_OK) {
+                    val user = data?.extras?.getString(NameActivity.USER_KEY) ?: Build.MODEL
+                    BingoSocket.socket?.let {
+                        it.emit("create", JSONObject().apply {
+                            put(ApiConstants.NAME, et_room.text.toString())
+                            put(ApiConstants.USER, user)
+                        })
+                    }
+                }
+            }
+        }
+    }
+
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    fun handleEvents(event: ResponseEvent) {
+        when (event) {
+            is GameJoinEvent -> {
+                proceedToActiveRoom()
+                gameId = ""
+            }
+        }
     }
 }

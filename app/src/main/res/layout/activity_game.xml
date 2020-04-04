@@ -37,11 +37,20 @@
         app:layout_constraintTop_toTopOf="parent"
         tools:visibility="visible" />
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_member_list"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintStart_toEndOf="@id/tv_users"
+        app:layout_constraintTop_toTopOf="@id/tv_users"
+        tools:visibility="visible" />
+
     <Button
-        android:id="@+id/btn_shuffle"
+        android:id="@+id/btn_leave"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Shuffle all numbers"
+        android:text="Leave room"
         app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
