@@ -38,7 +38,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun proceedToActiveRoom() {
-        startActivity(Intent(this, GameActivity::class.java))
+        startActivity(Intent(this, LobbyActivity::class.java))
     }
 
     private fun validateInput(): Boolean {

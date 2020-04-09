@@ -10,3 +10,10 @@ class MemberUpdateEvent(
     @SerializedName("message") val message: String,
     @SerializedName("room") val room: GameRoom
 ) : ResponseEvent()
+
+class BingoNumberUpdateEvent(
+    @SerializedName("user") val user: String,
+    @SerializedName("number") val number: Int
+): ResponseEvent()
+
+class NumberStackChangeEvent : ResponseEvent("100")
