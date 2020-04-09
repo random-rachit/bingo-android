@@ -30,7 +30,7 @@ class GameActivity : AppCompatActivity() {
         rv_game_table.layoutManager = GridLayoutManager(this, 5)
         rv_game_table.adapter = mAdapter
         tv_stack_top.text = NUMBER_STACK.peek().toString()
-        tv_stack_top.setOnClickListener {
+        btn_shuffle.setOnClickListener {
             shuffleGameTable()
         }
     }

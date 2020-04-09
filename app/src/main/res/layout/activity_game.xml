@@ -20,13 +20,23 @@
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_marginTop="32dp"
-        android:background="@android:drawable/picture_frame"
-        android:backgroundTint="@color/colorAccent"
+        android:background="@color/colorPrimaryDark"
         android:gravity="center"
         android:textColor="@android:color/black"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/rv_game_table" />
+
+    <Button
+        android:id="@+id/btn_shuffle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:background="@color/colorAccent"
+        android:padding="16dp"
+        android:text="Shuffle it!"
+        android:textAllCaps="false"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
