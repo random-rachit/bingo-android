@@ -8,81 +8,41 @@
     tools:context=".MainActivity">
 
     <TextView
+        android:id="@+id/tv_app_name_label"
+        android:textColor="@android:color/white"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fontFamily="cursive"
         android:gravity="center"
         android:text="BINGO"
-        android:textSize="28sp"
+        android:textSize="36sp"
+        android:transitionName="app_name"
         android:textStyle="bold"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <EditText
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/et_user"
-        android:hint="User name"
-        app:layout_constraintBottom_toTopOf="@id/et_room" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:targetApi="lollipop" />
 
     <EditText
         android:id="@+id/et_room"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Room name"
+        android:background="#4000"
+        android:gravity="center"
+        android:hint="Enter the room name"
+        android:padding="16dp"
+        android:textColor="@android:color/white"
+        android:textColorHint="#4fff"
+        app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintBottom_toTopOf="@id/btn_create" />
 
     <Button
         android:id="@+id/btn_create"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="8dp"
+        android:background="@drawable/btn_layout"
+        android:textColor="@android:color/black"
+        android:transitionName="button"
         android:text="Create new room"
-        app:layout_constraintBottom_toBottomOf="parent" />
-
-    <!--    <Button-->
-    <!--        android:id="@+id/btn_join"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        android:text="Join existing room"-->
-    <!--        app:layout_constraintBottom_toTopOf="@id/btn_create" />-->
-
-
-    <!--    <TextView-->
-    <!--        android:id="@+id/tv_result"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        app:layout_constraintTop_toTopOf="parent" />-->
-
-    <!--    <EditText-->
-    <!--        android:id="@+id/et_name"-->
-    <!--        app:layout_constraintBottom_toTopOf="@id/et_game"-->
-    <!--        android:hint="Enter your name"-->
-    <!--        android:layout_width="match_parent"-->
-    <!--        android:layout_height="wrap_content"/>-->
-
-    <!--    <EditText-->
-    <!--        android:id="@+id/et_game"-->
-    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--        android:hint="Enter Game Room"-->
-    <!--        app:layout_constraintEnd_toStartOf="@id/btn_join"-->
-    <!--        app:layout_constraintStart_toStartOf="parent"-->
-    <!--        android:layout_width="0dp"-->
-    <!--        android:layout_height="wrap_content"/>-->
-
-    <!--    <Button-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        app:layout_constraintEnd_toEndOf="parent"-->
-    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--        android:id="@+id/btn_create"-->
-    <!--        android:text="Create"/>-->
-
-    <!--    <Button-->
-    <!--        android:layout_width="wrap_content"-->
-    <!--        android:layout_height="wrap_content"-->
-    <!--        app:layout_constraintEnd_toStartOf="@id/btn_create"-->
-    <!--        app:layout_constraintBottom_toBottomOf="parent"-->
-    <!--        android:id="@+id/btn_join"-->
-    <!--        android:text="Join"/>-->
-
-
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:targetApi="lollipop" />
 </androidx.constraintlayout.widget.ConstraintLayout>

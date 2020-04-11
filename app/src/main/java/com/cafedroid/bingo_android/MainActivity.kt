@@ -1,9 +1,12 @@
 package com.cafedroid.bingo_android
 
 import android.app.Activity
+import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Pair
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import org.greenrobot.eventbus.EventBus
@@ -33,17 +36,27 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun createRoom() {
-
-        startActivityForResult(Intent(this, NameActivity::class.java), CREATE_ROOM_REQUEST)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            val options = ActivityOptions.makeSceneTransitionAnimation(
+                this,
+                Pair.create(btn_create as View, "button"),
+                Pair.create(tv_app_name_label as View, "app_name")
+            )
+            startActivityForResult(
+                Intent(this, NameActivity::class.java),
+                CREATE_ROOM_REQUEST,
+                options.toBundle()
+            )
+        } else {
+            startActivityForResult(Intent(this, NameActivity::class.java), CREATE_ROOM_REQUEST)
+        }
     }
 
     private fun proceedToActiveRoom() {
         startActivity(Intent(this, LobbyActivity::class.java))
     }
 
-    private fun validateInput(): Boolean {
-        return et_room.text.toString().isNotBlank() && et_user.text.toString().isNotBlank()
-    }
+    private fun validateInput(): Boolean = et_room.text.toString().isNotBlank()
 
     override fun onStart() {
         super.onStart()
@@ -78,6 +91,7 @@ class MainActivity : AppCompatActivity() {
             CREATE_ROOM_REQUEST -> {
                 if (resultCode == Activity.RESULT_OK) {
                     val user = data?.extras?.getString(NameActivity.USER_KEY) ?: Build.MODEL
+
                     BingoSocket.socket?.let {
                         it.emit(SocketAction.ACTION_CREATE, JSONObject().apply {
                             put(ApiConstants.NAME, et_room.text.toString())

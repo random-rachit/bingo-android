@@ -4,21 +4,45 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorAccent"
     tools:context=".NameActivity">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:fontFamily="cursive"
+        android:gravity="center"
+        android:text="BINGO"
+        android:textColor="@android:color/white"
+        android:textSize="36sp"
+        android:textStyle="bold"
+        android:transitionName="app_name"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:targetApi="lollipop" />
 
     <EditText
         android:id="@+id/et_username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter a unique name"
+        android:background="#4000"
+        android:textColor="@android:color/white"
+        android:textColorHint="#4fff"
+        android:gravity="center"
+        android:hint="Enter your name"
+        android:padding="16dp"
         app:layout_constraintBottom_toTopOf="@id/btn_proceed"
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
         android:id="@+id/btn_proceed"
+        android:layout_margin="8dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/btn_layout"
+        android:textColor="@android:color/black"
+        android:transitionName="button"
         android:text="Proceed"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:targetApi="lollipop" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
