@@ -93,11 +93,6 @@ class GameActivity : AppCompatActivity() {
             it.number = popNumberStack() ?: 0
         }
         list?.shuffle()
-        list?.map {
-            val index = list.indexOf(it)
-            it.xPosition = index % 5
-            it.yPosition = index / 5
-        }
         mAdapter?.notifyDataSetChanged()
     }
 
