@@ -8,25 +8,13 @@
     tools:context=".LobbyActivity">
 
     <TextView
-        android:id="@+id/tv_game_state"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Awaiting %adminName% to start the game"
-        android:textColor="@android:color/black"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
         android:id="@+id/tv_users"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="Members: "
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_game_state" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_member_list"
@@ -41,9 +29,22 @@
         android:id="@+id/btn_start"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        tools:visibility="visible"
+        android:visibility="invisible"
+        tools:visibility="invisible"
         android:text="Start Game"
         app:layout_constraintBottom_toBottomOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_game_state"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Awaiting %adminName% to start the game"
+        android:textColor="@android:color/black"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@id/btn_start"
+        app:layout_constraintEnd_toEndOf="@id/btn_start"
+        app:layout_constraintStart_toStartOf="@id/btn_start"
+        app:layout_constraintTop_toTopOf="@id/btn_start" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

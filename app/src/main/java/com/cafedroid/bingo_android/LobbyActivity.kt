@@ -34,7 +34,7 @@ class LobbyActivity : AppCompatActivity() {
         tv_users.text = "Members: ${ActiveGameRoom.activeRoom?.roomMembers}"
         if (isAdmin()) {
             btn_start.visibility = View.VISIBLE
-        }
+        } else btn_start.visibility = View.INVISIBLE
         btn_start.setOnClickListener {
             BingoSocket.socket?.let {
                 it.emit("start", JSONObject().apply {
@@ -52,13 +52,13 @@ class LobbyActivity : AppCompatActivity() {
 
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     fun handleSocketEvents(event: ResponseEvent) {
+        initView()
         when (event) {
             is MemberUpdateEvent -> {
                 Toast.makeText(applicationContext, event.message, Toast.LENGTH_SHORT).show()
-                initView()
             }
             is GameJoinEvent -> {
-                initView()
+
             }
         }
     }

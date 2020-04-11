@@ -40,7 +40,7 @@ class GameTableAdapter(private val mContext: Context) :
             BingoNumber()
         )
 
-    private var isLocked = false
+    var isTableLocked = false
 
     init {
         initNumberStack()
@@ -59,41 +59,46 @@ class GameTableAdapter(private val mContext: Context) :
         holder.setContent()
     }
 
-    fun lockAdapter(lock: Boolean) {
-        isLocked = true
+    fun lockGameTable(lock: Boolean) {
+        isTableLocked = true
     }
 
     inner class BingoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         fun setContent() {
+            val bingoNumber = mList[adapterPosition]
             itemView.tv_bingo_number.text =
                 if (mList[adapterPosition].number == 0) "·" else mList[adapterPosition].number.toString()
 
             itemView.tv_bingo_number.setOnClickListener {
-                if (isLocked) return@setOnClickListener
-                val number = mList[adapterPosition].number
+                if (isTableLocked || bingoNumber.isDone) return@setOnClickListener
+                val num = bingoNumber.number
                 when (GameState.getGameStateByValue(ActiveGameRoom.activeRoom?.roomState)) {
                     GameState.READY -> {
-                        if (number == 0) {
-                            val num = (popNumberStack() ?: 0)
-                            itemView.tv_bingo_number.text = num.toString()
+                        if (num == 0) {
+                            val stackNumber = (popNumberStack() ?: 0)
                             mList[adapterPosition] =
-                                BingoNumber(num, adapterPosition % 5, adapterPosition / 5)
+                                BingoNumber(stackNumber, adapterPosition % 5, adapterPosition / 5)
+                            notifyItemChanged(adapterPosition)
                         } else {
-                            pushToNumberStack(number)
+                            pushToNumberStack(num)
                             mList[adapterPosition] = BingoNumber()
-                            itemView.tv_bingo_number.text =
-                                if (mList[adapterPosition].number == 0) "·" else mList[adapterPosition].number.toString()
+                            notifyItemChanged(adapterPosition)
                         }
                     }
                     GameState.IN_GAME -> {
-                        registerNumberToGame(adapterPosition)
-                        itemView.setBackgroundColor(
-                            ContextCompat.getColor(
-                                mContext,
-                                android.R.color.holo_red_dark
+                        if (ActiveGameRoom.activeRoom?.roomMembers?.get(
+                                ActiveGameRoom.activeRoom?.userTurn ?: 0
+                            ) == USERNAME
+                        ) {
+                            markDone(adapterPosition)
+                            itemView.setBackgroundColor(
+                                ContextCompat.getColor(
+                                    mContext,
+                                    android.R.color.holo_red_dark
+                                )
                             )
-                        )
+                        }
                     }
                     else -> {
                     }
@@ -101,5 +106,18 @@ class GameTableAdapter(private val mContext: Context) :
             }
         }
 
+    }
+
+    fun markDone(num: Int) {
+        mList.first {
+            it.number == num
+        }.apply {
+            if (!isDone) {
+                isDone = true
+                val pos = mList.indexOf(this)
+                notifyItemChanged(pos)
+                registerNumberToGame(num, pos)
+            }
+        }
     }
 }

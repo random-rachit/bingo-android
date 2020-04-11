@@ -9,6 +9,7 @@ import com.google.gson.annotations.SerializedName
 import org.greenrobot.eventbus.EventBus
 import org.json.JSONObject
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 const val BASE_URL = "https://d81a1cb8.ngrok.io"
 
@@ -20,7 +21,8 @@ var USERNAME = ""
 
 val NUMBER_STACK: Stack<Int> = Stack()
 
-//val MARKED_ARRAY: ArrayList<BingoNumber> = listOf()
+val MOD_ARRAY = mutableListOf(0, 0, 0, 0, 0)
+val DIV_ARRAY = mutableListOf(0, 0, 0, 0, 0)
 
 fun initNumberStack() {
     NUMBER_STACK.clear()
@@ -39,30 +41,21 @@ fun pushToNumberStack(num: Int) {
     EventBus.getDefault().post(NumberStackChangeEvent())
 }
 
-object ApiEndpoints {
-    const val GAME = "game/"
-    const val JOIN = "join/"
-    const val CREATE = "create/"
-}
-
 fun Any.getLoggerTag(): String {
     return this.javaClass.simpleName
 }
 
-fun registerNumberToGame(pos: Int) {
-    //TODO: Register the number to socket
-    checkTableStatus()
+fun registerNumberToGame(num: Int, pos: Int) {
+    MOD_ARRAY[pos % 5]++
+    DIV_ARRAY[pos / 5]++
     BingoSocket.socket?.let {
         it.emit("push", JSONObject().apply {
             put("user", USERNAME)
             put("id", ActiveGameRoom.activeRoom?.roomId)
-            put("hasWon", ActiveGameRoom.activeRoom?.hasWon)
+            put("number", num)
+            put("hasWon", checkWinner())
         })
     }
-}
-
-fun checkTableStatus() {
-
 }
 
 object ApiConstants {
@@ -100,6 +93,23 @@ private val socketEventListener: Emitter.Listener = Emitter.Listener {
     }
 }
 
+fun checkWinner(): Boolean = countRows() >= 5
+
+fun countRows(): Int {
+    var rows = 0
+    MOD_ARRAY.filter {
+        it == 5
+    }.map {
+        rows++
+    }
+    DIV_ARRAY.filter {
+        it == 5
+    }.map {
+        rows++
+    }
+    return rows
+}
+
 object BingoSocket {
     var socket: Socket? = null
 
@@ -116,10 +126,32 @@ data class GameRoom(
     @SerializedName("admin") var roomAdmin: String,
     @SerializedName("users") var roomMembers: List<String>,
     @SerializedName("state") var roomState: Int,
+    @SerializedName("turn") var userTurn: Int,
     @Transient var hasWon: Boolean = false
 )
 
-data class BingoNumber(var number: Int = 0, var xPosition: Int = 0, var yPosition: Int = 0)
+data class BingoNumber(
+    var number: Int = 0,
+    var xPosition: Int = 0,
+    var yPosition: Int = 0,
+    var isDone: Boolean = false
+) {
+
+    override fun equals(other: Any?): Boolean {
+        if (other is BingoNumber)
+            return this.number == other.number && (this.xPosition == other.xPosition || this.yPosition == other.yPosition)
+
+        return false
+    }
+
+    override fun hashCode(): Int {
+        var result = number
+        result = 31 * result + xPosition
+        result = 31 * result + yPosition
+        return result
+    }
+
+}
 
 enum class GameState(val value: Int) {
     INACTIVE(100),
