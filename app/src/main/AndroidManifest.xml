@@ -16,15 +16,14 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
-        <activity android:name=".GameActivity">
+        <activity android:name=".GameActivity"/>
+        <activity android:name=".NameActivity" />
+        <activity android:name=".LobbyActivity" />
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
                 <action android:name="android.intent.action.MAIN" />
             </intent-filter>
-        </activity>
-        <activity android:name=".NameActivity" />
-        <activity android:name=".LobbyActivity" />
-        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
 
@@ -32,10 +31,10 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="bingo.cafedroid.biz"
+                    android:host="174efd50.ngrok.io"
                     android:scheme="https" />
                 <data
-                    android:host="d81a1cb8.ngrok.io"
+                    android:host="174efd50.ngrok.io"
                     android:scheme="http" />
             </intent-filter>
         </activity>

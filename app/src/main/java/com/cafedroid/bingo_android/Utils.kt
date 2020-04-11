@@ -1,21 +1,11 @@
 package com.cafedroid.bingo_android
 
-import android.util.Log
-import com.github.nkzawa.emitter.Emitter
-import com.github.nkzawa.socketio.client.IO
-import com.github.nkzawa.socketio.client.Socket
-import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
 import org.greenrobot.eventbus.EventBus
 import org.json.JSONObject
 import java.util.*
-import java.util.concurrent.TimeUnit
 
-const val BASE_URL = "https://d81a1cb8.ngrok.io"
-
-const val GAME_JOIN_EVENT = 1001
-const val MEMBER_UPDATE_EVENT = 1003
-const val NUMBER_SEND_EVENT = 1004
+const val BASE_URL = "https://174efd50.ngrok.io"
 
 var USERNAME = ""
 
@@ -41,24 +31,36 @@ fun pushToNumberStack(num: Int) {
     EventBus.getDefault().post(NumberStackChangeEvent())
 }
 
-fun Any.getLoggerTag(): String {
-    return this.javaClass.simpleName
-}
-
-fun registerNumberToGame(num: Int, pos: Int) {
+fun registerNumberToGame(num: Int, pos: Int, sendToSocket: Boolean = false) {
     MOD_ARRAY[pos % 5]++
     DIV_ARRAY[pos / 5]++
-    BingoSocket.socket?.let {
-        it.emit("push", JSONObject().apply {
-            put("user", USERNAME)
-            put("id", ActiveGameRoom.activeRoom?.roomId)
-            put("number", num)
-            put("hasWon", checkWinner())
-        })
+    val hasWon = countRows() >= 5
+    if (sendToSocket) {
+        BingoSocket.socket?.let {
+            it.emit(SocketAction.ACTION_PUSH, JSONObject().apply {
+                put(ApiConstants.USER, USERNAME)
+                put(ApiConstants.ID, ActiveGameRoom.activeRoom?.roomId)
+                put(ApiConstants.NUMBER, num)
+                put(ApiConstants.HAS_WON, hasWon)
+            })
+        }
     }
 }
 
+object SocketAction {
+
+    const val ACTION_ADMIN = "adminAction"
+    const val ACTION_START = "start"
+    const val ACTION_LEAVE_ROOM = "leave"
+    const val ACTION_CREATE = "create"
+    const val ACTION_JOIN = "join"
+    const val ACTION_PUSH = "push"
+
+}
+
 object ApiConstants {
+    const val HAS_WON = "hasWon"
+    const val NUMBER = "number"
     const val ID = "id"
     const val NAME = "name"
     const val USER = "user"
@@ -69,29 +71,6 @@ object ActiveGameRoom {
 }
 
 fun isAdmin() = ActiveGameRoom.activeRoom?.roomAdmin == USERNAME
-
-private val socketEventListener: Emitter.Listener = Emitter.Listener {
-    Log.e("Utils", "${it[0]}")
-    when (val eventId = (it[0] as JSONObject)["id"]) {
-        GAME_JOIN_EVENT -> {
-            val gameJoinEvent = Gson().fromJson(it[0].toString(), GameJoinEvent::class.java)
-            ActiveGameRoom.activeRoom = gameJoinEvent.room
-            EventBus.getDefault().post(gameJoinEvent)
-        }
-        MEMBER_UPDATE_EVENT -> {
-            val roomUpdateEvent = Gson().fromJson(it[0].toString(), MemberUpdateEvent::class.java)
-            ActiveGameRoom.activeRoom = roomUpdateEvent.room
-            EventBus.getDefault().post(roomUpdateEvent)
-        }
-        NUMBER_SEND_EVENT -> {
-            val bingoEvent = Gson().fromJson(it[0].toString(), BingoNumberUpdateEvent::class.java)
-            EventBus.getDefault().post(bingoEvent)
-        }
-        else -> {
-            Log.e("SocketEventListener", "$eventId not handled")
-        }
-    }
-}
 
 fun checkWinner(): Boolean = countRows() >= 5
 
@@ -110,48 +89,16 @@ fun countRows(): Int {
     return rows
 }
 
-object BingoSocket {
-    var socket: Socket? = null
-
-    fun connect() {
-        socket = IO.socket(BASE_URL)
-        socket?.connect()
-        socket?.on("event", socketEventListener)
-    }
-}
-
-data class GameRoom(
+class GameRoom(
     @SerializedName("_id") val roomId: String,
     @SerializedName("name") val roomName: String,
     @SerializedName("admin") var roomAdmin: String,
     @SerializedName("users") var roomMembers: List<String>,
     @SerializedName("state") var roomState: Int,
-    @SerializedName("turn") var userTurn: Int,
-    @Transient var hasWon: Boolean = false
+    @SerializedName("turn") var userTurn: Int
 )
 
-data class BingoNumber(
-    var number: Int = 0,
-    var xPosition: Int = 0,
-    var yPosition: Int = 0,
-    var isDone: Boolean = false
-) {
-
-    override fun equals(other: Any?): Boolean {
-        if (other is BingoNumber)
-            return this.number == other.number && (this.xPosition == other.xPosition || this.yPosition == other.yPosition)
-
-        return false
-    }
-
-    override fun hashCode(): Int {
-        var result = number
-        result = 31 * result + xPosition
-        result = 31 * result + yPosition
-        return result
-    }
-
-}
+data class BingoNumber(var number: Int = 0, var isDone: Boolean = false)
 
 enum class GameState(val value: Int) {
     INACTIVE(100),
@@ -168,6 +115,19 @@ enum class GameState(val value: Int) {
                 300 -> READY
                 400 -> IN_GAME
                 else -> EXPIRED
+            }
+        }
+    }
+}
+
+enum class AdminAction(val value: Int) {
+    LAUNCH_GAME(900), INVALID(-1);
+
+    companion object {
+        fun getGameStateByValue(value: Int?): AdminAction {
+            return when (value) {
+                100 -> LAUNCH_GAME
+                else -> INVALID
             }
         }
     }

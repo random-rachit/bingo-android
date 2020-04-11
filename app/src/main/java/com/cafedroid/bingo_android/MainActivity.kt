@@ -18,7 +18,7 @@ class MainActivity : AppCompatActivity() {
         const val JOIN_ROOM_REQUEST = 1001
     }
 
-    private var gameId: String = ""
+    private var gameId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,7 +49,7 @@ class MainActivity : AppCompatActivity() {
         super.onStart()
         EventBus.getDefault().register(this)
         intent.data?.lastPathSegment?.let {
-            if (gameId.isBlank()) {
+            if (gameId.isNullOrBlank()) {
                 gameId = it
                 startActivityForResult(Intent(this, NameActivity::class.java), JOIN_ROOM_REQUEST)
             }
@@ -68,7 +68,7 @@ class MainActivity : AppCompatActivity() {
                 if (resultCode == Activity.RESULT_OK) {
                     val user = data?.extras?.getString(NameActivity.USER_KEY) ?: Build.MODEL
                     BingoSocket.socket?.let {
-                        it.emit("join", JSONObject().apply {
+                        it.emit(SocketAction.ACTION_JOIN, JSONObject().apply {
                             put(ApiConstants.ID, gameId)
                             put(ApiConstants.USER, user)
                         })
@@ -79,7 +79,7 @@ class MainActivity : AppCompatActivity() {
                 if (resultCode == Activity.RESULT_OK) {
                     val user = data?.extras?.getString(NameActivity.USER_KEY) ?: Build.MODEL
                     BingoSocket.socket?.let {
-                        it.emit("create", JSONObject().apply {
+                        it.emit(SocketAction.ACTION_CREATE, JSONObject().apply {
                             put(ApiConstants.NAME, et_room.text.toString())
                             put(ApiConstants.USER, user)
                         })
@@ -94,7 +94,7 @@ class MainActivity : AppCompatActivity() {
         when (event) {
             is GameJoinEvent -> {
                 proceedToActiveRoom()
-                gameId = ""
+                gameId = null
             }
         }
     }

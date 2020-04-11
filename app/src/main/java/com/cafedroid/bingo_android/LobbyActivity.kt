@@ -31,13 +31,15 @@ class LobbyActivity : AppCompatActivity() {
     private fun initView() {
         tv_game_state.text =
             String.format("Awaiting %s to start the game", ActiveGameRoom.activeRoom?.roomAdmin)
-        tv_users.text = "Members: ${ActiveGameRoom.activeRoom?.roomMembers}"
+        tv_users.text =
+            String.format("Members: %s", ActiveGameRoom.activeRoom?.roomMembers.toString())
+
         if (isAdmin()) {
             btn_start.visibility = View.VISIBLE
         } else btn_start.visibility = View.INVISIBLE
         btn_start.setOnClickListener {
             BingoSocket.socket?.let {
-                it.emit("start", JSONObject().apply {
+                it.emit(SocketAction.ACTION_START, JSONObject().apply {
                     put(ApiConstants.ID, ActiveGameRoom.activeRoom?.roomId)
                     put(ApiConstants.USER, USERNAME)
                 })
@@ -57,15 +59,16 @@ class LobbyActivity : AppCompatActivity() {
             is MemberUpdateEvent -> {
                 Toast.makeText(applicationContext, event.message, Toast.LENGTH_SHORT).show()
             }
-            is GameJoinEvent -> {
-
+            is GameStateChangeEvent -> {
+                if (GameState.getGameStateByValue(ActiveGameRoom.activeRoom?.roomState) == GameState.READY)
+                    startGameActivity()
             }
         }
     }
 
     private fun leaveRoom() {
         BingoSocket.socket?.let {
-            it.emit("leave", JSONObject().apply {
+            it.emit(SocketAction.ACTION_LEAVE_ROOM, JSONObject().apply {
                 put(ApiConstants.USER, USERNAME)
                 put(ApiConstants.ID, ActiveGameRoom.activeRoom?.roomId)
             })
@@ -96,7 +99,7 @@ class LobbyActivity : AppCompatActivity() {
                     )
                     type = "text/plain"
                 }
-                startActivity(Intent.createChooser(shareIntent, "Invite Friends"))
+                startActivity(Intent.createChooser(shareIntent, "Invite up to 5 friends"))
             }
             R.id.btn_leave -> leaveRoom()
         }
