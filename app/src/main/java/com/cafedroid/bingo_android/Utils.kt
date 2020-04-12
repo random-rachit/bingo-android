@@ -6,8 +6,10 @@ import org.json.JSONObject
 import java.util.*
 
 const val BASE_URL = "https://174efd50.ngrok.io"
+const val ROBOHASH_URL = "https://robohash.org/"
 
 var USERNAME = ""
+
 
 val NUMBER_STACK: Stack<Int> = Stack()
 

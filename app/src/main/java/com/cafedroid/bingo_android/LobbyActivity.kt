@@ -7,6 +7,7 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_lobby.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -14,6 +15,8 @@ import org.greenrobot.eventbus.ThreadMode
 import org.json.JSONObject
 
 class LobbyActivity : AppCompatActivity() {
+
+    private var mAdapter: MemberListAdapter? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,9 +34,12 @@ class LobbyActivity : AppCompatActivity() {
     private fun initView() {
         tv_game_state.text =
             String.format("Awaiting %s to start the game", ActiveGameRoom.activeRoom?.roomAdmin)
-        tv_users.text =
-            String.format("Members: %s", ActiveGameRoom.activeRoom?.roomMembers.toString())
-
+//        tv_users.text =
+//            String.format("Members: %s", ActiveGameRoom.activeRoom?.roomMembers.toString())
+        mAdapter = MemberListAdapter(this)
+        rv_member_list.layoutManager = LinearLayoutManager(this)
+        rv_member_list.adapter = mAdapter
+        refreshAdapter()
         if (isAdmin()) {
             btn_start.visibility = View.VISIBLE
         } else btn_start.visibility = View.INVISIBLE
@@ -54,7 +60,7 @@ class LobbyActivity : AppCompatActivity() {
 
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)
     fun handleSocketEvents(event: ResponseEvent) {
-        initView()
+        refreshAdapter()
         when (event) {
             is MemberUpdateEvent -> {
                 Toast.makeText(applicationContext, event.message, Toast.LENGTH_SHORT).show()
@@ -64,6 +70,10 @@ class LobbyActivity : AppCompatActivity() {
                     startGameActivity()
             }
         }
+    }
+
+    private fun refreshAdapter() {
+        mAdapter?.setMemberList(ActiveGameRoom.activeRoom?.roomMembers ?: emptyList())
     }
 
     private fun leaveRoom() {

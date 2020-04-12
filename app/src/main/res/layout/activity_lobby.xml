@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/colorAccent"
     android:padding="12dp"
     tools:context=".LobbyActivity">
 
@@ -11,26 +12,32 @@
         android:id="@+id/tv_users"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Members: "
+        android:layout_marginTop="4dp"
+        android:text="Members"
+        android:textColor="@android:color/white"
+        android:textSize="20sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_member_list"
-        android:layout_width="0dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        app:layout_constraintStart_toEndOf="@id/tv_users"
-        app:layout_constraintTop_toTopOf="@id/tv_users"
+        android:layout_marginTop="8dp"
+        app:layout_constraintBottom_toTopOf="@id/btn_start"
+        app:layout_constraintStart_toStartOf="@id/tv_users"
+        app:layout_constraintTop_toBottomOf="@id/tv_users"
+        app:layout_constraintVertical_bias="0"
         tools:visibility="visible" />
 
     <Button
         android:id="@+id/btn_start"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@drawable/btn_layout"
+        android:textColor="@android:color/black"
         android:visibility="invisible"
-        tools:visibility="invisible"
         android:text="Start Game"
         app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -38,8 +45,7 @@
         android:id="@+id/tv_game_state"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Awaiting %adminName% to start the game"
-        android:textColor="@android:color/black"
+        android:textColor="@android:color/white"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/btn_start"
