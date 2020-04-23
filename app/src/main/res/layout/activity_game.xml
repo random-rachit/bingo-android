@@ -4,40 +4,46 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimary"
+    android:background="@color/colorAccent"
     tools:context=".GameActivity">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_game_table"
-        android:layout_margin="8dp"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        android:layout_margin="8dp"
+        app:layout_constraintBottom_toTopOf="@id/tv_stack_top"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_countdown_timer" />
 
     <TextView
         android:id="@+id/tv_stack_top"
         android:layout_width="56dp"
         android:layout_height="56dp"
         android:layout_marginTop="32dp"
-        android:background="@color/colorPrimaryDark"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/circle"
         android:gravity="center"
-        android:textColor="@android:color/white"
+        android:textColor="@android:color/black"
         android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@id/btn_shuffle"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/rv_game_table" />
+        tools:visibility="gone" />
 
     <Button
         android:id="@+id/btn_shuffle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        android:background="@color/colorAccent"
+        android:background="@drawable/btn_layout"
         android:padding="16dp"
         android:text="Shuffle it!"
         android:textAllCaps="false"
-        app:layout_constraintBottom_toBottomOf="parent" />
+        android:textColor="@android:color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:visibility="gone" />
 
     <TextView
         android:id="@+id/tv_countdown_label"
@@ -45,26 +51,51 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="The game starts in: "
-        android:visibility="gone"
-        tools:visibility="visible"
         android:textColor="@android:color/white"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        tools:visibility="visible" />
+
+    <FrameLayout
+        android:id="@+id/fl_turn_member_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/tv_countdown_label" />
 
     <TextView
         android:id="@+id/tv_countdown_timer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:visibility="gone"
-        tools:visibility="visible"
         android:layout_marginTop="8dp"
         android:textColor="@android:color/white"
         android:textSize="28sp"
-        android:text="30 seconds"
         android:textStyle="bold"
+        android:visibility="gone"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_countdown_label" />
+        app:layout_constraintTop_toBottomOf="@id/tv_countdown_label"
+        tools:visibility="visible" />
 
+    <FrameLayout
+        android:id="@+id/bingo_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/rv_game_table">
+
+        <TextView
+            android:id="@+id/tv_bingo_button"
+            android:layout_width="128dp"
+            android:layout_height="128dp"
+            android:background="@drawable/bingo_btn_selector"
+            android:enabled="false"
+            android:scaleType="centerCrop" />
+    </FrameLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

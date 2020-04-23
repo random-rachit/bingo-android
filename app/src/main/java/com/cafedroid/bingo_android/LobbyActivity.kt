@@ -3,8 +3,8 @@ package com.cafedroid.bingo_android
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
-import android.view.MenuItem
 import android.view.View
+import android.widget.PopupMenu
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -34,8 +34,8 @@ class LobbyActivity : AppCompatActivity() {
     private fun initView() {
         tv_game_state.text =
             String.format("Awaiting %s to start the game", ActiveGameRoom.activeRoom?.roomAdmin)
-//        tv_users.text =
-//            String.format("Members: %s", ActiveGameRoom.activeRoom?.roomMembers.toString())
+        btn_share.setOnClickListener { onToolbarItemSelected(it) }
+        btn_more.setOnClickListener { onToolbarItemSelected(it) }
         mAdapter = MemberListAdapter(this)
         rv_member_list.layoutManager = LinearLayoutManager(this)
         rv_member_list.adapter = mAdapter
@@ -94,13 +94,13 @@ class LobbyActivity : AppCompatActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         super.onCreateOptionsMenu(menu)
-        menuInflater.inflate(R.menu.game_menu, menu)
+        menuInflater.inflate(R.menu.lobby_menu, menu)
         return true
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.share_btn -> {
+    private fun onToolbarItemSelected(item: View) {
+        when (item.id) {
+            R.id.btn_share -> {
                 val shareIntent = Intent().apply {
                     action = Intent.ACTION_SEND
                     putExtra(
@@ -111,8 +111,17 @@ class LobbyActivity : AppCompatActivity() {
                 }
                 startActivity(Intent.createChooser(shareIntent, "Invite up to 5 friends"))
             }
-            R.id.btn_leave -> leaveRoom()
+            R.id.btn_more -> {
+                val popupMenu = PopupMenu(this, btn_more)
+                menuInflater.inflate(R.menu.lobby_menu, popupMenu.menu)
+                popupMenu.setOnMenuItemClickListener {
+                    when (it.itemId) {
+                        R.id.btn_leave -> leaveRoom()
+                    }
+                    true
+                }
+                popupMenu.show()
+            }
         }
-        return super.onOptionsItemSelected(item)
     }
 }

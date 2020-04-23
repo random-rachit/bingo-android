@@ -90,7 +90,7 @@ class GameTableAdapter(private val mContext: Context) :
 
     }
 
-    fun markDone(num: Int, send: Boolean) {
+    fun markDone(num: Int, push: Boolean) {
         mList.first {
             it.number == num
         }.apply {
@@ -98,7 +98,8 @@ class GameTableAdapter(private val mContext: Context) :
                 isDone = true
                 val pos = mList.indexOf(this)
                 notifyItemChanged(pos)
-                registerNumberToGame(num, pos, send)
+                registerNumberToGame(pos)
+                if (push) pushNumberToGame(num)
             }
         }
     }

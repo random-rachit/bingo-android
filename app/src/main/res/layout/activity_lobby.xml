@@ -5,26 +5,51 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorAccent"
-    android:padding="12dp"
     tools:context=".LobbyActivity">
 
     <TextView
         android:id="@+id/tv_users"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_height="?android:actionBarSize"
+        android:gravity="center_vertical"
         android:text="Members"
+        android:padding="12dp"
         android:textColor="@android:color/white"
         android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="@id/tv_users"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tv_users">
+
+        <ImageButton
+            android:id="@+id/btn_share"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="12dp"
+            android:background="?android:selectableItemBackground"
+            app:srcCompat="@drawable/ic_share_black_24dp" />
+
+        <ImageButton
+            android:id="@+id/btn_more"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="12dp"
+            android:background="?android:selectableItemBackground"
+            app:srcCompat="@drawable/ic_more_white_24dp" />
+    </LinearLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_member_list"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_margin="12dp"
         app:layout_constraintBottom_toTopOf="@id/btn_start"
         app:layout_constraintStart_toStartOf="@id/tv_users"
         app:layout_constraintTop_toBottomOf="@id/tv_users"
@@ -38,6 +63,7 @@
         android:background="@drawable/btn_layout"
         android:textColor="@android:color/black"
         android:visibility="invisible"
+        android:layout_margin="8dp"
         android:text="Start Game"
         app:layout_constraintBottom_toBottomOf="parent" />
 

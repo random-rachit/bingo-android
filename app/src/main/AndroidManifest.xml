@@ -5,6 +5,8 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <uses-permission android:name="android.permission.VIBRATE" />
+
     <application
         android:name=".BingoApplication"
         android:allowBackup="true"
@@ -33,10 +35,10 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="174efd50.ngrok.io"
+                    android:host="98ad2e2d.ngrok.io"
                     android:scheme="https" />
                 <data
-                    android:host="174efd50.ngrok.io"
+                    android:host="98ad2e2d.ngrok.io"
                     android:scheme="http" />
             </intent-filter>
         </activity>

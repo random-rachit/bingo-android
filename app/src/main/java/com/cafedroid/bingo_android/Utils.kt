@@ -5,16 +5,18 @@ import org.greenrobot.eventbus.EventBus
 import org.json.JSONObject
 import java.util.*
 
-const val BASE_URL = "https://174efd50.ngrok.io"
-const val ROBOHASH_URL = "https://robohash.org/"
+const val BASE_URL = "https://98ad2e2d.ngrok.io"
+const val ROBO_HASH_URL = "https://robohash.org/"
 
 var USERNAME = ""
 
 
 val NUMBER_STACK: Stack<Int> = Stack()
 
-val MOD_ARRAY = mutableListOf(0, 0, 0, 0, 0)
-val DIV_ARRAY = mutableListOf(0, 0, 0, 0, 0)
+var MOD_ARRAY = MutableList(5) { 0 }
+var DIV_ARRAY = MutableList(5) { 0 }
+var DIAGONAL_1 = 0
+var DIAGONAL_2 = 0
 
 fun initNumberStack() {
     NUMBER_STACK.clear()
@@ -33,24 +35,29 @@ fun pushToNumberStack(num: Int) {
     EventBus.getDefault().post(NumberStackChangeEvent())
 }
 
-fun registerNumberToGame(num: Int, pos: Int, sendToSocket: Boolean = false) {
-    MOD_ARRAY[pos % 5]++
-    DIV_ARRAY[pos / 5]++
-    val hasWon = countRows() >= 5
-    if (sendToSocket) {
-        BingoSocket.socket?.let {
-            it.emit(SocketAction.ACTION_PUSH, JSONObject().apply {
-                put(ApiConstants.USER, USERNAME)
-                put(ApiConstants.ID, ActiveGameRoom.activeRoom?.roomId)
-                put(ApiConstants.NUMBER, num)
-                put(ApiConstants.HAS_WON, hasWon)
-            })
-        }
+fun pushNumberToGame(num: Int) {
+    BingoSocket.socket?.let {
+        it.emit(SocketAction.ACTION_PUSH, JSONObject().apply {
+            put(ApiConstants.USER, USERNAME)
+            put(ApiConstants.ID, ActiveGameRoom.activeRoom?.roomId)
+            put(ApiConstants.NUMBER, num)
+        })
     }
+}
+
+fun registerNumberToGame(pos: Int) {
+    val mod = pos % 5
+    val div = pos / 5
+    if (mod == div) DIAGONAL_1++
+    if (mod + div == 4) DIAGONAL_2++
+    MOD_ARRAY[mod]++
+    DIV_ARRAY[div]++
+    if (checkWinner()) EventBus.getDefault().post(ButtonGlowEvent(true))
 }
 
 object SocketAction {
 
+    const val ACTION_WIN = "win"
     const val ACTION_ADMIN = "adminAction"
     const val ACTION_START = "start"
     const val ACTION_LEAVE_ROOM = "leave"
@@ -61,7 +68,7 @@ object SocketAction {
 }
 
 object ApiConstants {
-    const val HAS_WON = "hasWon"
+    const val TIME_TAKEN = "time"
     const val NUMBER = "number"
     const val ID = "id"
     const val NAME = "name"
@@ -76,8 +83,16 @@ fun isAdmin() = ActiveGameRoom.activeRoom?.roomAdmin == USERNAME
 
 fun checkWinner(): Boolean = countRows() >= 5
 
+fun resetRows() {
+    MOD_ARRAY = MutableList(5) { 0 }
+    DIV_ARRAY = MutableList(5) { 0 }
+    DIAGONAL_1 = 0
+    DIAGONAL_2 = 0
+}
+
 fun countRows(): Int {
     var rows = 0
+
     MOD_ARRAY.filter {
         it == 5
     }.map {
@@ -88,6 +103,9 @@ fun countRows(): Int {
     }.map {
         rows++
     }
+    if (DIAGONAL_1 == 5) rows++
+    if (DIAGONAL_2 == 5) rows++
+
     return rows
 }
 

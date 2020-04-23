@@ -76,9 +76,10 @@ class MainActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        when (requestCode) {
-            JOIN_ROOM_REQUEST -> {
-                if (resultCode == Activity.RESULT_OK) {
+        if (resultCode == Activity.RESULT_OK) {
+            btn_create.isEnabled = false
+            when (requestCode) {
+                JOIN_ROOM_REQUEST -> {
                     val user = data?.extras?.getString(NameActivity.USER_KEY) ?: Build.MODEL
                     BingoSocket.socket?.let {
                         it.emit(SocketAction.ACTION_JOIN, JSONObject().apply {
@@ -87,11 +88,8 @@ class MainActivity : AppCompatActivity() {
                         })
                     }
                 }
-            }
-            CREATE_ROOM_REQUEST -> {
-                if (resultCode == Activity.RESULT_OK) {
+                CREATE_ROOM_REQUEST -> {
                     val user = data?.extras?.getString(NameActivity.USER_KEY) ?: Build.MODEL
-
                     BingoSocket.socket?.let {
                         it.emit(SocketAction.ACTION_CREATE, JSONObject().apply {
                             put(ApiConstants.NAME, et_room.text.toString())

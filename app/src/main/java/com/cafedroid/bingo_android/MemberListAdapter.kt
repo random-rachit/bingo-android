@@ -34,7 +34,7 @@ class MemberListAdapter(private val mContext: Context) :
     inner class MemberViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
         fun setContent() {
-            Glide.with(mContext).load(ROBOHASH_URL + mList[adapterPosition])
+            Glide.with(mContext).load(ROBO_HASH_URL + mList[adapterPosition])
                 .into(itemView.iv_display_bot)
             itemView.tv_display_name.text = mList[adapterPosition]
         }
