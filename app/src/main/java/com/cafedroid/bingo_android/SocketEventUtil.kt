@@ -20,6 +20,13 @@ const val GAME_STATE_CHANGE_EVENT = 1005
 const val TURN_UPDATE_EVENT = 1006
 const val GAME_WIN_EVENT = 1007
 const val GAME_LOCK_EVENT = 1008
+const val SOCKET_ERROR_EVENT = 1009
+
+object ErrorCode {
+    const val MEMBER_LIMIT_REACHED = 2001
+    const val USERNAME_TAKEN = 2002
+    const val GAME_EXPIRED = 2003
+}
 
 private val socketEventListener: Emitter.Listener = Emitter.Listener {
     Log.d("Utils", "${it[0]}")
@@ -53,6 +60,10 @@ private val socketEventListener: Emitter.Listener = Emitter.Listener {
             resetRows()
             EventBus.getDefault().post(gameWinEvent)
         }
+        SOCKET_ERROR_EVENT -> {
+            val errorEvent = Gson().fromJson(it[0].toString(), SocketErrorEvent::class.java)
+            EventBus.getDefault().post(errorEvent)
+        }
         else -> {
             Log.e("SocketEventListener", "$eventId not handled")
         }
@@ -68,6 +79,13 @@ object BingoSocket {
         socket?.on("event", socketEventListener)
     }
 }
+
+const val DEFAULT_ERROR_MESSAGE = "Something went wrong. Try again later."
+
+class SocketErrorEvent(
+    @SerializedName("code") val code: Int = -1,
+    @SerializedName("message") val message: String = DEFAULT_ERROR_MESSAGE
+) : ResponseEvent()
 
 abstract class ResponseEvent(@SerializedName("id") val eventId: String? = null)
 
@@ -89,8 +107,10 @@ class GameStateChangeEvent(@SerializedName("state") val state: Int) : ResponseEv
 
 class GameLockEvent : ResponseEvent()
 
-class GameWinEvent(@SerializedName("user") val user: String,
-                   @SerializedName("timeTaken") val timeTaken: Long) : ResponseEvent()
+class GameWinEvent(
+    @SerializedName("user") val user: String,
+    @SerializedName("timeTaken") val timeTaken: Long
+) : ResponseEvent()
 
 class NumberStackChangeEvent : ResponseEvent(LocalEvents.NUMBER_STACK_CHANGE_EVENT)
 

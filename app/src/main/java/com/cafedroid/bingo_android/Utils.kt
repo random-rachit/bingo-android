@@ -1,11 +1,14 @@
 package com.cafedroid.bingo_android
 
+import android.content.Context
+import android.graphics.Typeface
+import android.widget.TextView
 import com.google.gson.annotations.SerializedName
 import org.greenrobot.eventbus.EventBus
 import org.json.JSONObject
 import java.util.*
 
-const val BASE_URL = "https://98ad2e2d.ngrok.io"
+const val BASE_URL = "https://417ae403.ngrok.io"
 const val ROBO_HASH_URL = "https://robohash.org/"
 
 var USERNAME = ""
@@ -118,6 +121,15 @@ class GameRoom(
     @SerializedName("turn") var userTurn: Int
 )
 
+fun isMyTurn(): Boolean = getActiveUser() == USERNAME
+
+fun getActiveUser(): String {
+    ActiveGameRoom.activeRoom?.apply {
+        return roomMembers[userTurn]
+    }
+    return ""
+}
+
 data class BingoNumber(var number: Int = 0, var isDone: Boolean = false)
 
 enum class GameState(val value: Int) {
@@ -152,3 +164,11 @@ enum class AdminAction(val value: Int) {
         }
     }
 }
+
+fun TextView.setCustomFont(context: Context) {
+    val am = context.assets
+    val typeface = Typeface.createFromAsset(am, "fonts/pacifico.ttf")
+    setTypeface(typeface)
+}
+
+class GameEvent(val user: String, val event: String)

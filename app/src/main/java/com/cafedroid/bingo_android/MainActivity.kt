@@ -1,20 +1,18 @@
 package com.cafedroid.bingo_android
 
 import android.app.Activity
-import android.app.ActivityOptions
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.util.Pair
 import android.view.View
-import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.json.JSONObject
 
-class MainActivity : AppCompatActivity() {
+
+class MainActivity : BaseActivity() {
 
     companion object {
         const val CREATE_ROOM_REQUEST = 1000
@@ -30,29 +28,23 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initViews() {
-        btn_create.setOnClickListener {
+        cv_btn_create.setOnClickListener {
+            et_room.visibility = View.VISIBLE
+            ml_activity_main.transitionToEnd()
+        }
+        lottie_create_btn.setOnClickListener {
+            lottie_create_btn.playAnimation()
             if (validateInput()) createRoom()
         }
     }
 
     private fun createRoom() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            val options = ActivityOptions.makeSceneTransitionAnimation(
-                this,
-                Pair.create(btn_create as View, "button"),
-                Pair.create(tv_app_name_label as View, "app_name")
-            )
-            startActivityForResult(
-                Intent(this, NameActivity::class.java),
-                CREATE_ROOM_REQUEST,
-                options.toBundle()
-            )
-        } else {
-            startActivityForResult(Intent(this, NameActivity::class.java), CREATE_ROOM_REQUEST)
-        }
+        startActivityForResult(Intent(this, NameActivity::class.java), CREATE_ROOM_REQUEST)
     }
 
     private fun proceedToActiveRoom() {
+        progressBar.visibility = View.INVISIBLE
+        cv_btn_create.visibility = View.VISIBLE
         startActivity(Intent(this, LobbyActivity::class.java))
     }
 
@@ -77,9 +69,11 @@ class MainActivity : AppCompatActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
-            btn_create.isEnabled = false
+            lottie_create_btn.isEnabled = false
             when (requestCode) {
                 JOIN_ROOM_REQUEST -> {
+                    cv_btn_create.visibility = View.INVISIBLE
+                    progressBar.visibility = View.VISIBLE
                     val user = data?.extras?.getString(NameActivity.USER_KEY) ?: Build.MODEL
                     BingoSocket.socket?.let {
                         it.emit(SocketAction.ACTION_JOIN, JSONObject().apply {
@@ -92,7 +86,7 @@ class MainActivity : AppCompatActivity() {
                     val user = data?.extras?.getString(NameActivity.USER_KEY) ?: Build.MODEL
                     BingoSocket.socket?.let {
                         it.emit(SocketAction.ACTION_CREATE, JSONObject().apply {
-                            put(ApiConstants.NAME, et_room.text.toString())
+                            put(ApiConstants.NAME, et_room.text.toString().trim())
                             put(ApiConstants.USER, user)
                         })
                     }
@@ -106,8 +100,25 @@ class MainActivity : AppCompatActivity() {
         when (event) {
             is GameJoinEvent -> {
                 proceedToActiveRoom()
+                lottie_create_btn.isEnabled = true
+                lottie_create_btn.frame = 0
                 gameId = null
             }
+            is SocketErrorEvent -> {
+                when (event.code) {
+                    ErrorCode.GAME_EXPIRED -> showToast(event.message)
+                    ErrorCode.MEMBER_LIMIT_REACHED -> showToast(event.message)
+                    ErrorCode.USERNAME_TAKEN -> showToast(event.message)
+                }
+            }
         }
+    }
+
+    override fun onBackPressed() {
+        if (ml_activity_main.currentState == ml_activity_main.endState) {
+            et_room.setText("")
+            et_room.visibility = View.GONE
+            ml_activity_main.transitionToStart()
+        } else super.onBackPressed()
     }
 }

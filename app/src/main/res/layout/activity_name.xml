@@ -4,45 +4,60 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorAccent"
+    android:background="@android:color/white"
+    android:padding="8dp"
     tools:context=".NameActivity">
 
-    <TextView
+    <com.cafedroid.bingo_android.CursiveTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:fontFamily="cursive"
         android:gravity="center"
-        android:text="BINGO"
-        android:textColor="@android:color/white"
+        android:text="Pocket Bingo"
+        android:textColor="@color/colorPrimary"
         android:textSize="36sp"
         android:textStyle="bold"
-        android:transitionName="app_name"
         app:layout_constraintTop_toTopOf="parent"
         tools:targetApi="lollipop" />
 
-    <EditText
+    <com.cafedroid.bingo_android.CursiveEditText
         android:id="@+id/et_username"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#4000"
-        android:textColor="@android:color/white"
-        android:textColorHint="#4fff"
+        android:background="@android:color/transparent"
         android:gravity="center"
-        android:hint="Enter your name"
+        android:hint="Enter your name here..."
+        android:imeOptions="actionDone"
+        android:inputType="textPersonName"
+        android:maxLines="1"
         android:padding="16dp"
+        android:textColor="@android:color/black"
+        android:textColorHint="@android:color/darker_gray"
         app:layout_constraintBottom_toTopOf="@id/btn_proceed"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
+    <FrameLayout
         android:id="@+id/btn_proceed"
-        android:layout_margin="8dp"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/btn_layout"
-        android:textColor="@android:color/black"
-        android:transitionName="button"
-        android:text="Proceed"
+        android:layout_marginBottom="32dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        tools:targetApi="lollipop" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/lottie_proceed"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
+            app:lottie_autoPlay="false"
+            app:lottie_loop="false"
+            app:lottie_rawRes="@raw/done_circle_blue"
+            tools:targetApi="lollipop" />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            app:srcCompat="@drawable/ic_done" />
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

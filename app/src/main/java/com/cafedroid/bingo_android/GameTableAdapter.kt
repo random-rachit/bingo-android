@@ -72,6 +72,7 @@ class GameTableAdapter(private val mContext: Context) :
                             ) == USERNAME
                         ) {
                             markDone(mList[adapterPosition].number, true)
+                            toggleTableLock(true)
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
                                 itemView.setBackgroundColor(
                                     ContextCompat.getColor(

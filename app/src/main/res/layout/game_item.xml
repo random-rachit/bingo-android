@@ -6,7 +6,7 @@
     android:layout_height="56dp"
     android:background="@android:color/white">
 
-    <TextView
+    <com.cafedroid.bingo_android.CursiveTextView
         android:id="@+id/tv_bingo_number"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

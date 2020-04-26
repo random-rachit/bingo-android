@@ -1,13 +1,12 @@
 package com.cafedroid.bingo_android
 
+import android.animation.Animator
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_name.*
 
-class NameActivity : AppCompatActivity() {
+class NameActivity : BaseActivity() {
 
     companion object {
         const val USER_KEY = "user"
@@ -22,14 +21,26 @@ class NameActivity : AppCompatActivity() {
 
     private fun initView() {
         btn_proceed.setOnClickListener {
-            if (et_username.text.isNotBlank()) {
-                USERNAME = et_username.text.toString()
-                setResult(
-                    Activity.RESULT_OK,
-                    Intent().putExtra(USER_KEY, USERNAME)
-                )
-                finish()
-            } else Toast.makeText(applicationContext, "Name's required buddy!", Toast.LENGTH_SHORT).show()
+            if (et_username.text?.isNotBlank() == true) {
+                lottie_proceed.playAnimation()
+                lottie_proceed.addAnimatorListener(object : Animator.AnimatorListener {
+                    override fun onAnimationRepeat(animation: Animator?) {}
+
+                    override fun onAnimationEnd(animation: Animator?) {
+                        USERNAME = et_username.text.toString().trim()
+                        setResult(
+                            Activity.RESULT_OK,
+                            Intent().putExtra(USER_KEY, USERNAME)
+                        )
+                        finish()
+                    }
+
+                    override fun onAnimationCancel(animation: Animator?) {}
+
+                    override fun onAnimationStart(animation: Animator?) {}
+
+                })
+            } else showToast("Name's required buddy!")
         }
     }
 }
