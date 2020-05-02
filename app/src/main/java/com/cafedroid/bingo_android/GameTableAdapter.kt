@@ -1,7 +1,6 @@
 package com.cafedroid.bingo_android
 
 import android.content.Context
-import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -43,13 +42,21 @@ class GameTableAdapter(private val mContext: Context) :
             val bingoNumber = mList[adapterPosition]
             itemView.tv_bingo_number.text =
                 if (mList[adapterPosition].number == 0) "·" else mList[adapterPosition].number.toString()
-            if (bingoNumber.isDone)
+            if (bingoNumber.isDone) {
                 itemView.setBackgroundColor(
                     ContextCompat.getColor(
                         mContext,
-                        android.R.color.holo_red_dark
+                        R.color.colorPrimary
                     )
                 )
+
+                itemView.tv_bingo_number.setTextColor(
+                    ContextCompat.getColor(
+                        mContext,
+                        android.R.color.white
+                    )
+                )
+            }
 
             itemView.tv_bingo_number.setOnClickListener {
                 if (isTableLocked || bingoNumber.isDone) return@setOnClickListener
@@ -73,14 +80,18 @@ class GameTableAdapter(private val mContext: Context) :
                         ) {
                             markDone(mList[adapterPosition].number, true)
                             toggleTableLock(true)
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-                                itemView.setBackgroundColor(
-                                    ContextCompat.getColor(
-                                        mContext,
-                                        android.R.color.holo_red_dark
-                                    )
+                            itemView.setBackgroundColor(
+                                ContextCompat.getColor(
+                                    mContext,
+                                    R.color.colorPrimary
                                 )
-                            }
+                            )
+                            itemView.tv_bingo_number.setTextColor(
+                                ContextCompat.getColor(
+                                    mContext,
+                                    android.R.color.white
+                                )
+                            )
                         }
                     }
                     else -> {

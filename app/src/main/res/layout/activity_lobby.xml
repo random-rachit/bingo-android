@@ -5,7 +5,16 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
+    android:paddingTop="16dp"
     tools:context=".LobbyActivity">
+
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.2"
+        android:scaleType="center"
+        app:srcCompat="@drawable/background_numbers" />
 
     <com.cafedroid.bingo_android.CursiveTextView
         android:id="@+id/tv_users"
@@ -52,11 +61,11 @@
         android:id="@+id/btn_share"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="?android:selectableItemBackground"
-        android:textColor="@color/colorPrimary"
         android:layout_marginBottom="8dp"
+        android:background="?android:selectableItemBackground"
         android:text="Invite more friends"
         android:textAllCaps="false"
+        android:textColor="@color/colorPrimary"
         app:layout_constraintBottom_toTopOf="@id/btn_start"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
@@ -67,19 +76,19 @@
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:background="@drawable/btn_layout"
+        android:elevation="8dp"
         android:text="Start Game"
         android:textAllCaps="false"
         android:textColor="@android:color/white"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:elevation="8dp"
         tools:visibility="visible" />
 
     <com.cafedroid.bingo_android.CursiveTextView
         android:id="@+id/tv_game_state"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textColor="@android:color/white"
+        android:textColor="@color/colorPrimary"
         android:textSize="16sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="@id/btn_start"

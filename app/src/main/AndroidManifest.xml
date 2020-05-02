@@ -18,12 +18,24 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:targetApi="m">
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.cafedroid.bingo_android"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+
         <activity android:name=".GameActivity" />
         <activity android:name=".NameActivity" />
         <activity android:name=".LobbyActivity" />
         <activity android:name=".BaseActivity" />
         <activity
             android:name=".MainActivity"
+            android:launchMode="singleInstance"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -36,10 +48,11 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="417ae403.ngrok.io"
+                    android:host="f2a2c6c8.ngrok.io"
                     android:scheme="https" />
+
                 <data
-                    android:host="417ae403.ngrok.io"
+                    android:host="f2a2c6c8.ngrok.io"
                     android:scheme="http" />
             </intent-filter>
         </activity>

@@ -1,11 +1,13 @@
 package com.cafedroid.bingo_android
 
+import android.content.DialogInterface
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.View
 import android.widget.PopupMenu
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.activity_lobby.*
@@ -42,7 +44,9 @@ class LobbyActivity : AppCompatActivity() {
         refreshAdapter()
         if (isAdmin()) {
             btn_start.visibility = View.VISIBLE
-        } else btn_start.visibility = View.INVISIBLE
+        } else {
+            btn_start.visibility = View.INVISIBLE
+        }
         btn_start.setOnClickListener {
             BingoSocket.socket?.let {
                 it.emit(SocketAction.ACTION_START, JSONObject().apply {
@@ -123,5 +127,21 @@ class LobbyActivity : AppCompatActivity() {
                 popupMenu.show()
             }
         }
+    }
+
+    override fun onBackPressed() = showLeaveDialog()
+
+
+    private fun showLeaveDialog() {
+        AlertDialog.Builder(this)
+            .setTitle(R.string.leave)
+            .setMessage(R.string.leave_message)
+            .setPositiveButton("Leave") { _, _ ->
+                leaveRoom()
+                super.onBackPressed()
+            }
+            .setNegativeButton("Cancel") { dialogInterface: DialogInterface, _: Int ->
+                dialogInterface.dismiss()
+            }
     }
 }

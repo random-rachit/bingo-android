@@ -8,7 +8,7 @@ import org.greenrobot.eventbus.EventBus
 import org.json.JSONObject
 import java.util.*
 
-const val BASE_URL = "https://417ae403.ngrok.io"
+const val BASE_URL = "https://f2a2c6c8.ngrok.io"
 const val ROBO_HASH_URL = "https://robohash.org/"
 
 var USERNAME = ""
@@ -22,6 +22,7 @@ var DIAGONAL_1 = 0
 var DIAGONAL_2 = 0
 
 fun initNumberStack() {
+
     NUMBER_STACK.clear()
     for (i in 25 downTo 1) {
         NUMBER_STACK.push(i)

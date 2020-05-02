@@ -2,12 +2,18 @@ package com.cafedroid.bingo_android
 
 import android.content.Context
 import android.content.DialogInterface
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.net.Uri
 import android.os.*
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
+import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
@@ -17,6 +23,10 @@ import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import org.json.JSONObject
+import java.io.File
+import java.io.FileOutputStream
+import java.io.IOException
+
 
 class GameActivity : BaseActivity() {
 
@@ -102,6 +112,16 @@ class GameActivity : BaseActivity() {
                 sent = true
             }
         }
+        tv_button_reset.setOnClickListener {
+            ActiveGameRoom.activeRoom = null
+            startActivity(Intent(this, MainActivity::class.java))
+        }
+
+        tv_share_win.setOnClickListener {
+            captureView(cl_game_view)?.let {
+                shareImageUri(it)
+            }
+        }
     }
 
     override fun onStop() {
@@ -160,14 +180,13 @@ class GameActivity : BaseActivity() {
                 gameLocked = true
             }
             is GameWinEvent -> {
-                tv_bingo_button.visibility = View.INVISIBLE
-                rv_game_event.visibility = View.INVISIBLE
+                setWinView(event.user)
                 if (event.user == USERNAME) {
                     lottie_result_view.setAnimation(R.raw.celebration)
                     lottie_result_view.playAnimation()
                     Toast.makeText(
                         this,
-                        "Congratulations, You have won the game!",
+                        "Congratulations, You won the game!",
                         Toast.LENGTH_SHORT
                     ).show()
                 } else {
@@ -181,6 +200,16 @@ class GameActivity : BaseActivity() {
                 }
             }
         }
+    }
+
+    private fun setWinView(winner: String) {
+        tv_bingo_button.visibility = View.INVISIBLE
+        rv_game_event.visibility = View.INVISIBLE
+        tv_button_reset.visibility = View.VISIBLE
+        tv_share_win.visibility = View.VISIBLE
+        tv_display_name.text =
+            String.format("%s won!", if (winner == USERNAME) "Your" else winner)
+        Glide.with(this).load(ROBO_HASH_URL + winner).into(iv_display_bot)
     }
 
     private fun setGameView(stateChange: Boolean = false) {
@@ -259,5 +288,51 @@ class GameActivity : BaseActivity() {
             .setNegativeButton("Cancel") { dialogInterface: DialogInterface, _: Int ->
                 dialogInterface.dismiss()
             }
+    }
+
+    private fun captureView(view: View): Uri? {
+        val image = Bitmap.createBitmap(
+            view.width,
+            view.height,
+            Bitmap.Config.RGB_565
+        )
+        //Draw the view inside the Bitmap
+        view.draw(Canvas(image))
+
+        //Store to sdcard
+        return saveImage(image)
+    }
+
+    private fun saveImage(image: Bitmap): Uri? {
+        val imagesFolder = File(cacheDir, "images")
+        var uri: Uri? = null
+        try {
+            imagesFolder.mkdirs()
+            val file = File(imagesFolder, "IMG_${System.currentTimeMillis()}.png")
+            val stream = FileOutputStream(file)
+            image.compress(Bitmap.CompressFormat.PNG, 90, stream)
+            stream.flush()
+            stream.close()
+            uri = FileProvider.getUriForFile(this, packageName, file)
+        } catch (e: IOException) {
+            Log.d(
+                this.javaClass.simpleName,
+                "IOException while trying to write file for sharing: " + e.message
+            )
+        }
+        return uri
+    }
+
+    private fun shareImageUri(uri: Uri) {
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            putExtra(
+                Intent.EXTRA_TEXT,
+                "Download and play now https://bingo.cafedroid.com/download"
+            )
+            putExtra(Intent.EXTRA_STREAM, uri)
+            addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            type = "image/png"
+        }
+        startActivity(intent)
     }
 }

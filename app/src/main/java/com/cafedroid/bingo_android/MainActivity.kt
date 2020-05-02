@@ -33,8 +33,10 @@ class MainActivity : BaseActivity() {
             ml_activity_main.transitionToEnd()
         }
         lottie_create_btn.setOnClickListener {
-            lottie_create_btn.playAnimation()
-            if (validateInput()) createRoom()
+            if (validateInput()) {
+                createRoom()
+                lottie_create_btn.playAnimation()
+            } else showToast("Enter the room name ☝️")
         }
     }
 
@@ -116,9 +118,28 @@ class MainActivity : BaseActivity() {
 
     override fun onBackPressed() {
         if (ml_activity_main.currentState == ml_activity_main.endState) {
+            lottie_create_btn.pauseAnimation()
+            lottie_create_btn.frame = 0
             et_room.setText("")
             et_room.visibility = View.GONE
             ml_activity_main.transitionToStart()
         } else super.onBackPressed()
+    }
+
+    override fun onNewIntent(intent: Intent?) {
+        super.onNewIntent(intent)
+        if (ml_activity_main.currentState == ml_activity_main.endState) {
+            lottie_create_btn.pauseAnimation()
+            lottie_create_btn.frame = 0
+            et_room.setText("")
+            et_room.visibility = View.GONE
+            ml_activity_main.transitionToStart()
+        }
+        intent?.data?.lastPathSegment?.let {
+            if (gameId.isNullOrBlank()) {
+                gameId = it
+                startActivityForResult(Intent(this, NameActivity::class.java), JOIN_ROOM_REQUEST)
+            }
+        }
     }
 }

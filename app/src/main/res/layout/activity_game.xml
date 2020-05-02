@@ -4,8 +4,16 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/cl_game_view"
     android:background="@android:color/white"
     tools:context=".GameActivity">
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:alpha="0.2"
+        android:scaleType="center"
+        app:srcCompat="@drawable/background_numbers" />
 
     <com.cafedroid.bingo_android.CursiveTextView
         android:id="@+id/tv_room_name"
@@ -120,6 +128,36 @@
         android:textColor="@android:color/white"
         android:textSize="16sp"
         android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_share_win"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        android:padding="8dp"
+        android:text="Share results with friends"
+        android:visibility="invisible"
+        android:textColor="@color/colorPrimary"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@id/tv_button_reset"
+        app:layout_constraintEnd_toEndOf="@id/tv_button_reset"
+        app:layout_constraintStart_toStartOf="@id/tv_button_reset" />
+
+    <com.cafedroid.bingo_android.CursiveTextView
+        android:id="@+id/tv_button_reset"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:background="@drawable/btn_layout"
+        android:gravity="center"
+        android:padding="16dp"
+        android:text="Finish"
+        android:textColor="@android:color/white"
+        android:textSize="16sp"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
