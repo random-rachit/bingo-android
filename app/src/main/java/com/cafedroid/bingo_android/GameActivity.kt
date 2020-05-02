@@ -334,5 +334,6 @@ class GameActivity : BaseActivity() {
             type = "image/png"
         }
         startActivity(intent)
+        finish()
     }
 }
