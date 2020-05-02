@@ -4,7 +4,7 @@
     package="com.cafedroid.bingo_android">
 
     <uses-permission android:name="android.permission.INTERNET" />
-
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
@@ -48,11 +48,11 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data
-                    android:host="f2a2c6c8.ngrok.io"
+                    android:host="bingo.cafedroid.biz"
                     android:scheme="https" />
 
                 <data
-                    android:host="f2a2c6c8.ngrok.io"
+                    android:host="bingo.cafedroid.biz"
                     android:scheme="http" />
             </intent-filter>
         </activity>

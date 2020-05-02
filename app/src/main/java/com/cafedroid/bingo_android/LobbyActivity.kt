@@ -109,7 +109,7 @@ class LobbyActivity : AppCompatActivity() {
                     action = Intent.ACTION_SEND
                     putExtra(
                         Intent.EXTRA_TEXT,
-                        "Join my bingo room \"${ActiveGameRoom.activeRoom?.roomName}\" at:\n ${BASE_URL}/${ActiveGameRoom.activeRoom?.roomId}"
+                        "Join my bingo room \"${ActiveGameRoom.activeRoom?.roomName}\" at:\n ${WEB_URL}/${ActiveGameRoom.activeRoom?.roomId}"
                     )
                     type = "text/plain"
                 }

@@ -8,7 +8,8 @@ import org.greenrobot.eventbus.EventBus
 import org.json.JSONObject
 import java.util.*
 
-const val BASE_URL = "https://f2a2c6c8.ngrok.io"
+var BASE_URL = "https://f2a2c6c8.ngrok.io"
+var WEB_URL = "https://bingo.cafedroid.biz"
 const val ROBO_HASH_URL = "https://robohash.org/"
 
 var USERNAME = ""
