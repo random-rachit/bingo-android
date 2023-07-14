@@ -13,6 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:alpha="0.2"
+        android:importantForAccessibility="no"
         android:scaleType="center"
         app:srcCompat="@drawable/background_numbers" />
 
@@ -65,7 +66,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="Create new room"
+                android:text="@string/create_new_room"
                 android:textColor="@android:color/white"
                 android:textSize="16sp"
                 android:textStyle="bold"
@@ -80,7 +81,7 @@
                 android:layout_marginTop="2dp"
                 android:background="@android:color/transparent"
                 android:gravity="center"
-                android:hint="Enter the room name"
+                android:hint="@string/enter_room_name"
                 android:imeOptions="actionDone"
                 android:maxLines="1"
                 android:textColor="@android:color/white"
@@ -114,6 +115,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:importantForAccessibility="no"
             app:srcCompat="@drawable/ic_done" />
     </FrameLayout>
 

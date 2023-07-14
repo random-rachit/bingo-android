@@ -7,10 +7,11 @@ import android.view.Menu
 import android.view.View
 import android.widget.PopupMenu
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
-import kotlinx.android.synthetic.main.activity_lobby.*
+import com.cafedroid.bingo_android.databinding.ActivityLobbyBinding
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -20,11 +21,22 @@ class LobbyActivity : AppCompatActivity() {
 
     private var mAdapter: MemberListAdapter? = null
 
+    private lateinit var binding: ActivityLobbyBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_lobby)
-
+        binding = ActivityLobbyBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         initView()
+        setupBackPress()
+    }
+
+    private fun setupBackPress() {
+        onBackPressedDispatcher.addCallback(this, object: OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                showLeaveDialog()
+            }
+        })
     }
 
     override fun onStart() {
@@ -34,20 +46,20 @@ class LobbyActivity : AppCompatActivity() {
 
 
     private fun initView() {
-        tv_game_state.text =
+        binding.tvGameState.text =
             String.format("Awaiting %s to start the game", ActiveGameRoom.activeRoom?.roomAdmin)
-        btn_share.setOnClickListener { onToolbarItemSelected(it) }
-        btn_more.setOnClickListener { onToolbarItemSelected(it) }
+        binding.btnShare.setOnClickListener { onToolbarItemSelected(it) }
+        binding.btnMore.setOnClickListener { onToolbarItemSelected(it) }
         mAdapter = MemberListAdapter(this)
-        rv_member_list.layoutManager = LinearLayoutManager(this)
-        rv_member_list.adapter = mAdapter
+        binding.rvMemberList.layoutManager = LinearLayoutManager(this)
+        binding.rvMemberList.adapter = mAdapter
         refreshAdapter()
         if (isAdmin()) {
-            btn_start.visibility = View.VISIBLE
+            binding.btnStart.visibility = View.VISIBLE
         } else {
-            btn_start.visibility = View.INVISIBLE
+            binding.btnStart.visibility = View.INVISIBLE
         }
-        btn_start.setOnClickListener {
+        binding.btnStart.setOnClickListener {
             BingoSocket.socket?.let {
                 it.emit(SocketAction.ACTION_START, JSONObject().apply {
                     put(ApiConstants.ID, ActiveGameRoom.activeRoom?.roomId)
@@ -69,6 +81,7 @@ class LobbyActivity : AppCompatActivity() {
             is MemberUpdateEvent -> {
                 Toast.makeText(applicationContext, event.message, Toast.LENGTH_SHORT).show()
             }
+
             is GameStateChangeEvent -> {
                 if (GameState.getGameStateByValue(ActiveGameRoom.activeRoom?.roomState) == GameState.READY)
                     startGameActivity()
@@ -104,7 +117,7 @@ class LobbyActivity : AppCompatActivity() {
 
     private fun onToolbarItemSelected(item: View) {
         when (item.id) {
-            R.id.btn_share -> {
+            binding.btnShare.id -> {
                 val shareIntent = Intent().apply {
                     action = Intent.ACTION_SEND
                     putExtra(
@@ -115,8 +128,9 @@ class LobbyActivity : AppCompatActivity() {
                 }
                 startActivity(Intent.createChooser(shareIntent, "Invite up to 5 friends"))
             }
-            R.id.btn_more -> {
-                val popupMenu = PopupMenu(this, btn_more)
+
+            binding.btnMore.id -> {
+                val popupMenu = PopupMenu(this, binding.btnMore)
                 menuInflater.inflate(R.menu.lobby_menu, popupMenu.menu)
                 popupMenu.setOnMenuItemClickListener {
                     when (it.itemId) {
@@ -129,16 +143,13 @@ class LobbyActivity : AppCompatActivity() {
         }
     }
 
-    override fun onBackPressed() = showLeaveDialog()
-
-
     private fun showLeaveDialog() {
         AlertDialog.Builder(this)
             .setTitle(R.string.leave)
             .setMessage(R.string.leave_message)
             .setPositiveButton("Leave") { _, _ ->
                 leaveRoom()
-                super.onBackPressed()
+                finish()
             }
             .setNegativeButton("Cancel") { dialogInterface: DialogInterface, _: Int ->
                 dialogInterface.dismiss()

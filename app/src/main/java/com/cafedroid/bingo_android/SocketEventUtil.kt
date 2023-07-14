@@ -1,11 +1,11 @@
 package com.cafedroid.bingo_android
 
 import android.util.Log
-import com.github.nkzawa.emitter.Emitter
-import com.github.nkzawa.socketio.client.IO
-import com.github.nkzawa.socketio.client.Socket
 import com.google.gson.Gson
 import com.google.gson.annotations.SerializedName
+import io.socket.client.IO
+import io.socket.client.Socket
+import io.socket.emitter.Emitter
 import org.greenrobot.eventbus.EventBus
 import org.json.JSONObject
 
@@ -36,34 +36,41 @@ private val socketEventListener: Emitter.Listener = Emitter.Listener {
             ActiveGameRoom.activeRoom = gameJoinEvent.room
             EventBus.getDefault().post(gameJoinEvent)
         }
+
         MEMBER_UPDATE_EVENT -> {
             val roomUpdateEvent = Gson().fromJson(it[0].toString(), MemberUpdateEvent::class.java)
             ActiveGameRoom.activeRoom = roomUpdateEvent.room
             EventBus.getDefault().post(roomUpdateEvent)
         }
+
         TURN_UPDATE_EVENT -> {
             val turnEvent = Gson().fromJson(it[0].toString(), TurnUpdateEvent::class.java)
             ActiveGameRoom.activeRoom?.userTurn = turnEvent.turn
             EventBus.getDefault().post(turnEvent)
         }
+
         GAME_STATE_CHANGE_EVENT -> {
             val gameState = Gson().fromJson(it[0].toString(), GameStateChangeEvent::class.java)
             ActiveGameRoom.activeRoom?.roomState = gameState.state
             EventBus.getDefault().post(gameState)
         }
+
         GAME_LOCK_EVENT -> {
             val gameLockEvent = Gson().fromJson(it[0].toString(), GameLockEvent::class.java)
             EventBus.getDefault().post(gameLockEvent)
         }
+
         GAME_WIN_EVENT -> {
             val gameWinEvent = Gson().fromJson(it[0].toString(), GameWinEvent::class.java)
             resetRows()
             EventBus.getDefault().post(gameWinEvent)
         }
+
         SOCKET_ERROR_EVENT -> {
             val errorEvent = Gson().fromJson(it[0].toString(), SocketErrorEvent::class.java)
             EventBus.getDefault().post(errorEvent)
         }
+
         else -> {
             Log.e("SocketEventListener", "$eventId not handled")
         }
@@ -76,7 +83,7 @@ object BingoSocket {
     fun connect() {
         socket = IO.socket(BASE_URL)
         socket?.connect()
-        socket?.on("event", socketEventListener)
+        socket?.on("hello", socketEventListener)
     }
 }
 

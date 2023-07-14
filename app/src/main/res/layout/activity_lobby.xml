@@ -8,43 +8,42 @@
     android:paddingTop="16dp"
     tools:context=".LobbyActivity">
 
-
     <ImageView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:alpha="0.2"
+        android:importantForAccessibility="no"
         android:scaleType="center"
         app:srcCompat="@drawable/background_numbers" />
 
     <com.cafedroid.bingo_android.CursiveTextView
         android:id="@+id/tv_users"
-        android:layout_width="wrap_content"
-        android:layout_height="?android:actionBarSize"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:ellipsize="end"
         android:gravity="center_vertical"
+        android:maxHeight="?android:actionBarSize"
         android:padding="12dp"
-        android:text="Members"
+        android:text="@string/members"
         android:textColor="@color/colorPrimary"
         android:textSize="20sp"
         android:textStyle="bold"
+        app:layout_constraintEnd_toStartOf="@id/btn_more"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <LinearLayout
+    <ImageButton
+        android:id="@+id/btn_more"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
+        android:layout_marginEnd="12dp"
+        android:background="?android:selectableItemBackground"
+        android:contentDescription="@string/more_options"
+        android:padding="16dp"
         app:layout_constraintBottom_toBottomOf="@id/tv_users"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/tv_users">
-
-        <ImageButton
-            android:id="@+id/btn_more"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="12dp"
-            android:background="?android:selectableItemBackground"
-            app:srcCompat="@drawable/ic_more_white_24dp" />
-    </LinearLayout>
+        app:layout_constraintTop_toTopOf="@id/tv_users"
+        app:srcCompat="@drawable/ic_more_white_24dp" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_member_list"
@@ -63,7 +62,7 @@
         android:layout_height="wrap_content"
         android:layout_marginBottom="8dp"
         android:background="?android:selectableItemBackground"
-        android:text="Invite more friends"
+        android:text="@string/invite_more_friends"
         android:textAllCaps="false"
         android:textColor="@color/colorPrimary"
         app:layout_constraintBottom_toTopOf="@id/btn_start"
@@ -72,16 +71,19 @@
 
     <Button
         android:id="@+id/btn_start"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_margin="8dp"
         android:background="@drawable/btn_layout"
-        android:elevation="8dp"
-        android:text="Start Game"
+        android:minWidth="240dp"
+        android:text="@string/start_game"
         android:textAllCaps="false"
         android:textColor="@android:color/white"
         android:visibility="invisible"
+        app:elevation="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         tools:visibility="visible" />
 
     <com.cafedroid.bingo_android.CursiveTextView

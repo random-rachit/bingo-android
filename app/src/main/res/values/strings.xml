@@ -5,4 +5,10 @@
     <string name="in_game_status">Game\'s going on</string>
     <string name="leave">Leave Room</string>
     <string name="leave_message">Are you sure you want to leave the game and get back to the home screen?</string>
+    <string name="enter_room_name">Enter the room name</string>
+    <string name="create_new_room">Create new room</string>
+    <string name="members">Members</string>
+    <string name="more_options">More Options</string>
+    <string name="invite_more_friends">Invite more friends</string>
+    <string name="start_game">Start Game</string>
 </resources>

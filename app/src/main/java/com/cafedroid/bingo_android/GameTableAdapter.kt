@@ -2,11 +2,10 @@ package com.cafedroid.bingo_android
 
 import android.content.Context
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.game_item.view.*
+import com.cafedroid.bingo_android.databinding.GameItemBinding
 
 class GameTableAdapter(private val mContext: Context) :
     RecyclerView.Adapter<GameTableAdapter.BingoViewHolder>() {
@@ -21,27 +20,26 @@ class GameTableAdapter(private val mContext: Context) :
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BingoViewHolder {
         return BingoViewHolder(
-            LayoutInflater.from(mContext)
-                .inflate(R.layout.game_item, parent, false)
+            GameItemBinding.inflate(LayoutInflater.from(mContext))
         )
     }
 
     override fun getItemCount(): Int = mList.size
 
     override fun onBindViewHolder(holder: BingoViewHolder, position: Int) {
-        holder.setContent()
+        holder.setContent(mList[position])
     }
 
     fun toggleTableLock(lock: Boolean) {
         isTableLocked = lock
     }
 
-    inner class BingoViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    inner class BingoViewHolder(private val binding: GameItemBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
-        fun setContent() {
-            val bingoNumber = mList[adapterPosition]
-            itemView.tv_bingo_number.text =
-                if (mList[adapterPosition].number == 0) "·" else mList[adapterPosition].number.toString()
+        fun setContent(bingoNumber: BingoNumber) {
+            binding.tvBingoNumber.text =
+                if (bingoNumber.number == 0) "·" else bingoNumber.number.toString()
             if (bingoNumber.isDone) {
                 itemView.setBackgroundColor(
                     ContextCompat.getColor(
@@ -50,7 +48,7 @@ class GameTableAdapter(private val mContext: Context) :
                     )
                 )
 
-                itemView.tv_bingo_number.setTextColor(
+                binding.tvBingoNumber.setTextColor(
                     ContextCompat.getColor(
                         mContext,
                         android.R.color.white
@@ -58,7 +56,7 @@ class GameTableAdapter(private val mContext: Context) :
                 )
             }
 
-            itemView.tv_bingo_number.setOnClickListener {
+            binding.tvBingoNumber.setOnClickListener {
                 if (isTableLocked || bingoNumber.isDone) return@setOnClickListener
                 val num = bingoNumber.number
                 when (GameState.getGameStateByValue(ActiveGameRoom.activeRoom?.roomState)) {
@@ -73,12 +71,13 @@ class GameTableAdapter(private val mContext: Context) :
                             notifyItemChanged(adapterPosition)
                         }
                     }
+
                     GameState.IN_GAME -> {
                         if (ActiveGameRoom.activeRoom?.roomMembers?.get(
                                 ActiveGameRoom.activeRoom?.userTurn ?: 0
                             ) == USERNAME
                         ) {
-                            markDone(mList[adapterPosition].number, true)
+                            markDone(bingoNumber.number, true)
                             toggleTableLock(true)
                             itemView.setBackgroundColor(
                                 ContextCompat.getColor(
@@ -86,7 +85,7 @@ class GameTableAdapter(private val mContext: Context) :
                                     R.color.colorPrimary
                                 )
                             )
-                            itemView.tv_bingo_number.setTextColor(
+                            binding.tvBingoNumber.setTextColor(
                                 ContextCompat.getColor(
                                     mContext,
                                     android.R.color.white
@@ -94,6 +93,7 @@ class GameTableAdapter(private val mContext: Context) :
                             )
                         }
                     }
+
                     else -> {
                     }
                 }

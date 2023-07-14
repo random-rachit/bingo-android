@@ -7,18 +7,20 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.net.Uri
 import android.os.*
+import android.os.VibrationEffect.DEFAULT_AMPLITUDE
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
+import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
-import kotlinx.android.synthetic.main.activity_game.*
-import kotlinx.android.synthetic.main.member_item.*
+import com.cafedroid.bingo_android.databinding.ActivityGameBinding
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -32,6 +34,8 @@ class GameActivity : BaseActivity() {
 
     private var mAdapter: GameTableAdapter? = null
     private var eventAdapter: GameEventAdapter? = null
+
+    private lateinit var binding: ActivityGameBinding
 
     companion object {
         private const val STAGING_TIMER: Long = 30
@@ -48,18 +52,36 @@ class GameActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_game)
+        binding = ActivityGameBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         initViews()
         startCountDown()
+        onBackPressedDispatcher.addCallback(this, object: OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                when (GameState.getGameStateByValue(ActiveGameRoom.activeRoom?.roomState)) {
+                    GameState.IN_GAME -> {
+                        if (isMyTurn()) showToast("Do your turn and you may leave.")
+                        else showLeaveDialog()
+                    }
+
+                    GameState.READY -> {
+                        showLeaveDialog()
+                    }
+
+                    else -> finish()
+                }
+            }
+
+        })
     }
 
     private fun startCountDown() {
         if (GameState.getGameStateByValue(ActiveGameRoom.activeRoom?.roomState) == GameState.READY) {
-            tv_countdown_timer.visibility = View.VISIBLE
+            binding.tvCountdownTimer.visibility = View.VISIBLE
 
             object : CountDownTimer(STAGING_TIMER * 1000, 1000) {
                 override fun onFinish() {
-                    btn_shuffle.visibility = View.INVISIBLE
+                    binding.btnShuffle.visibility = View.INVISIBLE
                     if (isAdmin()) {
                         BingoSocket.socket?.emit(SocketAction.ACTION_ADMIN, JSONObject().apply {
                             put("action", AdminAction.LAUNCH_GAME.value)
@@ -74,12 +96,12 @@ class GameActivity : BaseActivity() {
                 override fun onTick(millisUntilFinished: Long) {
                     val seconds = millisUntilFinished / 1000
                     if (seconds == 3.toLong()) {
-                        tv_countdown_timer.setTextColor(
+                        binding.tvCountdownTimer.setTextColor(
                             ContextCompat.getColor(this@GameActivity, android.R.color.holo_red_dark)
                         )
                         mAdapter?.toggleTableLock(true)
                     }
-                    tv_countdown_timer.text =
+                    binding.tvCountdownTimer.text =
                         String.format("00:${if (seconds < 0) "0" else ""}%s", seconds)
                 }
             }.start()
@@ -87,39 +109,47 @@ class GameActivity : BaseActivity() {
     }
 
     private fun initViews() {
-        mAdapter = GameTableAdapter(this)
-        eventAdapter = GameEventAdapter(this)
-        rv_game_table.layoutManager = GridLayoutManager(this, 5)
-        rv_game_event.layoutManager = LinearLayoutManager(this)
-        rv_game_table.adapter = mAdapter
-        rv_game_event.adapter = eventAdapter
-        rv_game_event.visibility = View.INVISIBLE
-        tv_stack_top.text = NUMBER_STACK.peek().toString()
-        btn_shuffle.setOnClickListener {
-            shuffleGameTable()
-        }
-        tv_bingo_button.isEnabled = false
-        tv_bingo_button.setOnClickListener {
-            val timeTakenToTap = System.currentTimeMillis() - buttonGlowTime
-            if (sent.not()) {
-                BingoSocket.socket?.let {
-                    it.emit(SocketAction.ACTION_WIN, JSONObject().apply {
-                        put(ApiConstants.ID, ActiveGameRoom.activeRoom?.roomId)
-                        put(ApiConstants.USER, USERNAME)
-                        put(ApiConstants.TIME_TAKEN, timeTakenToTap)
-                    })
-                }
-                sent = true
-            }
-        }
-        tv_button_reset.setOnClickListener {
-            ActiveGameRoom.activeRoom = null
-            startActivity(Intent(this, MainActivity::class.java))
-        }
+        binding.run {
+            mAdapter = GameTableAdapter(this@GameActivity)
+            eventAdapter = GameEventAdapter(this@GameActivity)
 
-        tv_share_win.setOnClickListener {
-            captureView(cl_game_view)?.let {
-                shareImageUri(it)
+            rvGameEvent.apply {
+                layoutManager = LinearLayoutManager(this@GameActivity)
+                adapter = eventAdapter
+                visibility = View.INVISIBLE
+            }
+
+            rvGameTable.apply {
+                layoutManager = GridLayoutManager(this@GameActivity, 5)
+                adapter = mAdapter
+            }
+            tvStackTop.text = NUMBER_STACK.peek().toString()
+            btnShuffle.setOnClickListener {
+                shuffleGameTable()
+            }
+            tvBingoButton.isEnabled = false
+            tvBingoButton.setOnClickListener {
+                val timeTakenToTap = System.currentTimeMillis() - buttonGlowTime
+                if (sent.not()) {
+                    BingoSocket.socket?.let {
+                        it.emit(SocketAction.ACTION_WIN, JSONObject().apply {
+                            put(ApiConstants.ID, ActiveGameRoom.activeRoom?.roomId)
+                            put(ApiConstants.USER, USERNAME)
+                            put(ApiConstants.TIME_TAKEN, timeTakenToTap)
+                        })
+                    }
+                    sent = true
+                }
+            }
+            tvButtonReset.setOnClickListener {
+                ActiveGameRoom.activeRoom = null
+                startActivity(Intent(this@GameActivity, MainActivity::class.java))
+            }
+
+            tvShareWin.setOnClickListener {
+                captureView(clGameView)?.let {
+                    shareImageUri(it)
+                }
             }
         }
     }
@@ -147,11 +177,12 @@ class GameActivity : BaseActivity() {
     fun onGameEvent(event: ResponseEvent) {
         when (event) {
             is NumberStackChangeEvent -> if (NUMBER_STACK.empty()) {
-                fl_stack_top_container.visibility = View.INVISIBLE
+                binding.flStackTopContainer.visibility = View.INVISIBLE
             } else {
-                fl_stack_top_container.visibility = View.VISIBLE
-                tv_stack_top.text = NUMBER_STACK.peek().toString()
+                binding.flStackTopContainer.visibility = View.VISIBLE
+                binding.tvStackTop.text = NUMBER_STACK.peek().toString()
             }
+
             is TurnUpdateEvent -> {
                 if (isMyTurn().not()) mAdapter?.toggleTableLock(true)
                 eventAdapter?.pushEvent(
@@ -160,38 +191,44 @@ class GameActivity : BaseActivity() {
                         "${if (event.user == USERNAME) "You" else event.user} pushed ${event.number}"
                     )
                 )
-                rv_game_event.scrollToPosition((eventAdapter?.itemCount ?: 0) - 1)
+                binding.rvGameEvent.scrollToPosition((eventAdapter?.itemCount ?: 0) - 1)
                 mAdapter?.markDone(event.number, false)
                 if (gameLocked.not()) setGameView()
             }
+
             is GameStateChangeEvent -> {
                 if (GameState.getGameStateByValue(ActiveGameRoom.activeRoom?.roomState) == GameState.IN_GAME) setGameView(
                     true
                 )
             }
+
             is ButtonGlowEvent -> {
-                tv_bingo_button.visibility = View.VISIBLE
-                tv_bingo_button.isEnabled = true
-                if (tv_bingo_button.isEnabled) buttonGlowTime = System.currentTimeMillis()
-                vibrate(300)
+                binding.tvBingoButton.visibility = View.VISIBLE
+                binding.tvBingoButton.isEnabled = true
+                if (binding.tvBingoButton.isEnabled) buttonGlowTime = System.currentTimeMillis()
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    vibrate()
+                }
             }
+
             is GameLockEvent -> {
                 mAdapter?.toggleTableLock(true)
                 gameLocked = true
             }
+
             is GameWinEvent -> {
                 setWinView(event.user)
                 if (event.user == USERNAME) {
-                    lottie_result_view.setAnimation(R.raw.celebration)
-                    lottie_result_view.playAnimation()
+                    binding.lottieResultView.setAnimation(R.raw.celebration)
+                    binding.lottieResultView.playAnimation()
                     Toast.makeText(
                         this,
                         "Congratulations, You won the game!",
                         Toast.LENGTH_SHORT
                     ).show()
                 } else {
-                    lottie_result_view.setAnimation(R.raw.bingo_lost)
-                    lottie_result_view.playAnimation()
+                    binding.lottieResultView.setAnimation(R.raw.bingo_lost)
+                    binding.lottieResultView.playAnimation()
                     Toast.makeText(
                         this,
                         "${event.user} won the game! Better luck next time.",
@@ -203,26 +240,26 @@ class GameActivity : BaseActivity() {
     }
 
     private fun setWinView(winner: String) {
-        tv_bingo_button.visibility = View.INVISIBLE
-        rv_game_event.visibility = View.INVISIBLE
-        tv_button_reset.visibility = View.VISIBLE
-        tv_share_win.visibility = View.VISIBLE
-        tv_display_name.text =
-            String.format("%s won!", if (winner == USERNAME) "Your" else winner)
-        Glide.with(this).load(ROBO_HASH_URL + winner).into(iv_display_bot)
+        binding.tvBingoButton.visibility = View.INVISIBLE
+        binding.rvGameEvent.visibility = View.INVISIBLE
+        binding.tvButtonReset.visibility = View.VISIBLE
+        binding.tvShareWin.visibility = View.VISIBLE
+//        tv_display_name.text =
+//            String.format("%s won!", if (winner == USERNAME) "Your" else winner)
+//        Glide.with(this).load(ROBO_HASH_URL + winner).into(iv_display_bot)
     }
 
     private fun setGameView(stateChange: Boolean = false) {
 
         if (stateChange) {
-            fl_turn_member_container.removeAllViews()
+            binding.flTurnMemberContainer.removeAllViews()
             val view = LayoutInflater.from(this)
-                .inflate(R.layout.member_item, fl_turn_member_container, false)
+                .inflate(R.layout.member_item, binding.flTurnMemberContainer, false)
             view.setBackgroundColor(ContextCompat.getColor(this, android.R.color.transparent))
-            fl_turn_member_container.addView(view)
-            tv_countdown_timer.visibility = View.INVISIBLE
-            fl_turn_member_container.visibility = View.VISIBLE
-            rv_game_event.visibility = View.VISIBLE
+            binding.flTurnMemberContainer.addView(view)
+            binding.tvCountdownTimer.visibility = View.INVISIBLE
+            binding.flTurnMemberContainer.visibility = View.VISIBLE
+            binding.rvGameEvent.visibility = View.VISIBLE
         }
         val activeRoom = ActiveGameRoom.activeRoom
         activeRoom?.let {
@@ -231,15 +268,15 @@ class GameActivity : BaseActivity() {
             mAdapter?.toggleTableLock(
                 (activeRoom.roomMembers[activeRoom.userTurn] == USERNAME).not()
             )
-            cl_member_item_root.setBackgroundColor(
-                ContextCompat.getColor(
-                    this,
-                    if (activeUser == USERNAME) R.color.green else android.R.color.white
-                )
-            )
-            tv_display_name.text =
-                String.format("%s turn", if (activeUser == USERNAME) "Your" else "$activeUser\'s")
-            Glide.with(this).load(ROBO_HASH_URL + activeUser).into(iv_display_bot)
+//            cl_member_item_root.setBackgroundColor(
+//                ContextCompat.getColor(
+//                    this,
+//                    if (activeUser == USERNAME) R.color.green else android.R.color.white
+//                )
+//            )
+//            tv_display_name.text =
+//                String.format("%s turn", if (activeUser == USERNAME) "Your" else "$activeUser\'s")
+//            Glide.with(this).load(ROBO_HASH_URL + activeUser).into(iv_display_bot)
         }
     }
 
@@ -254,27 +291,16 @@ class GameActivity : BaseActivity() {
         finish()
     }
 
-    private fun vibrate(millis: Long) {
+    @RequiresApi(Build.VERSION_CODES.O)
+    private fun vibrate() {
+        val millis = 300L
         val vibrationManager = getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-            vibrationManager.vibrate(millis)
+            vibrationManager.vibrate(VibrationEffect.createOneShot(millis, DEFAULT_AMPLITUDE))
         } else
             vibrationManager.vibrate(
-                VibrationEffect.createOneShot(millis, VibrationEffect.DEFAULT_AMPLITUDE)
+                VibrationEffect.createOneShot(millis, DEFAULT_AMPLITUDE)
             )
-    }
-
-    override fun onBackPressed() {
-        when (GameState.getGameStateByValue(ActiveGameRoom.activeRoom?.roomState)) {
-            GameState.IN_GAME -> {
-                if (isMyTurn()) showToast("Do your turn and you may leave.")
-                else showLeaveDialog()
-            }
-            GameState.READY -> {
-                showLeaveDialog()
-            }
-            else -> super.onBackPressed()
-        }
     }
 
     private fun showLeaveDialog() {

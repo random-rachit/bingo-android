@@ -5,7 +5,7 @@ import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.View
-import kotlinx.android.synthetic.main.activity_main.*
+import com.cafedroid.bingo_android.databinding.ActivityMainBinding
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
@@ -21,21 +21,24 @@ class MainActivity : BaseActivity() {
 
     private var gameId: String? = null
 
+    private lateinit var binding: ActivityMainBinding
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
         initViews()
     }
 
     private fun initViews() {
-        cv_btn_create.setOnClickListener {
-            et_room.visibility = View.VISIBLE
-            ml_activity_main.transitionToEnd()
+        binding.cvBtnCreate.setOnClickListener {
+            binding.etRoom.visibility = View.VISIBLE
+            binding.mlActivityMain.transitionToEnd()
         }
-        lottie_create_btn.setOnClickListener {
+        binding.lottieCreateBtn.setOnClickListener {
             if (validateInput()) {
                 createRoom()
-                lottie_create_btn.playAnimation()
+                binding.lottieCreateBtn.playAnimation()
             } else showToast("Enter the room name ☝️")
         }
     }
@@ -45,12 +48,12 @@ class MainActivity : BaseActivity() {
     }
 
     private fun proceedToActiveRoom() {
-        progressBar.visibility = View.INVISIBLE
-        cv_btn_create.visibility = View.VISIBLE
+        binding.progressBar.visibility = View.INVISIBLE
+        binding.cvBtnCreate.visibility = View.VISIBLE
         startActivity(Intent(this, LobbyActivity::class.java))
     }
 
-    private fun validateInput(): Boolean = et_room.text.toString().isNotBlank()
+    private fun validateInput(): Boolean = binding.etRoom.text.toString().isNotBlank()
 
     override fun onStart() {
         super.onStart()
@@ -71,11 +74,11 @@ class MainActivity : BaseActivity() {
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == Activity.RESULT_OK) {
-            lottie_create_btn.isEnabled = false
+            binding.lottieCreateBtn.isEnabled = false
             when (requestCode) {
                 JOIN_ROOM_REQUEST -> {
-                    cv_btn_create.visibility = View.INVISIBLE
-                    progressBar.visibility = View.VISIBLE
+                    binding.cvBtnCreate.visibility = View.INVISIBLE
+                    binding.progressBar.visibility = View.VISIBLE
                     val user = data?.extras?.getString(NameActivity.USER_KEY) ?: Build.MODEL
                     BingoSocket.socket?.let {
                         it.emit(SocketAction.ACTION_JOIN, JSONObject().apply {
@@ -88,7 +91,7 @@ class MainActivity : BaseActivity() {
                     val user = data?.extras?.getString(NameActivity.USER_KEY) ?: Build.MODEL
                     BingoSocket.socket?.let {
                         it.emit(SocketAction.ACTION_CREATE, JSONObject().apply {
-                            put(ApiConstants.NAME, et_room.text.toString().trim())
+                            put(ApiConstants.NAME, binding.etRoom.text.toString().trim())
                             put(ApiConstants.USER, user)
                         })
                     }
@@ -102,8 +105,8 @@ class MainActivity : BaseActivity() {
         when (event) {
             is GameJoinEvent -> {
                 proceedToActiveRoom()
-                lottie_create_btn.isEnabled = true
-                lottie_create_btn.frame = 0
+                binding.lottieCreateBtn.isEnabled = true
+                binding.lottieCreateBtn.frame = 0
                 gameId = null
             }
             is SocketErrorEvent -> {
@@ -117,23 +120,23 @@ class MainActivity : BaseActivity() {
     }
 
     override fun onBackPressed() {
-        if (ml_activity_main.currentState == ml_activity_main.endState) {
-            lottie_create_btn.pauseAnimation()
-            lottie_create_btn.frame = 0
-            et_room.setText("")
-            et_room.visibility = View.GONE
-            ml_activity_main.transitionToStart()
+        if (binding.mlActivityMain.currentState == binding.mlActivityMain.endState) {
+            binding.lottieCreateBtn.pauseAnimation()
+            binding.lottieCreateBtn.frame = 0
+            binding.etRoom.setText("")
+            binding.etRoom.visibility = View.GONE
+            binding.mlActivityMain.transitionToStart()
         } else super.onBackPressed()
     }
 
     override fun onNewIntent(intent: Intent?) {
         super.onNewIntent(intent)
-        if (ml_activity_main.currentState == ml_activity_main.endState) {
-            lottie_create_btn.pauseAnimation()
-            lottie_create_btn.frame = 0
-            et_room.setText("")
-            et_room.visibility = View.GONE
-            ml_activity_main.transitionToStart()
+        if (binding.mlActivityMain.currentState == binding.mlActivityMain.endState) {
+            binding.lottieCreateBtn.pauseAnimation()
+            binding.lottieCreateBtn.frame = 0
+            binding.etRoom.setText("")
+            binding.etRoom.visibility = View.GONE
+            binding.mlActivityMain.transitionToStart()
         }
         intent?.data?.lastPathSegment?.let {
             if (gameId.isNullOrBlank()) {

@@ -4,7 +4,7 @@
     package="com.cafedroid.bingo_android">
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
@@ -35,6 +35,7 @@
         <activity android:name=".BaseActivity" />
         <activity
             android:name=".MainActivity"
+            android:exported="true"
             android:launchMode="singleInstance"
             android:windowSoftInputMode="adjustResize">
             <intent-filter>
@@ -47,13 +48,11 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
 
-                <data
-                    android:host="bingo.cafedroid.biz"
-                    android:scheme="https" />
+                <data android:scheme="https" />
+                <data android:host="bingo.cafedroid.biz" />
 
-                <data
-                    android:host="bingo.cafedroid.biz"
-                    android:scheme="http" />
+                <data android:scheme="http" />
+                <data android:host="bingo.cafedroid.biz" />
             </intent-filter>
         </activity>
     </application>
