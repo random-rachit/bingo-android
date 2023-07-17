@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.cafedroid.bingo_android.ActiveGameRoom
 import com.cafedroid.bingo_android.ApiConstants
 import com.cafedroid.bingo_android.BingoSocket
-import com.cafedroid.bingo_android.GameActivity
 import com.cafedroid.bingo_android.GameState
 import com.cafedroid.bingo_android.GameStateChangeEvent
 import com.cafedroid.bingo_android.MemberListAdapter
@@ -95,8 +94,10 @@ class LobbyFragment : Fragment() {
     }
 
     private fun startGameActivity() {
-        startActivity(Intent(requireContext(), GameActivity::class.java))
-        requireActivity().finish()
+        val action = LobbyFragmentDirections.lobbyToGame()
+        findNavController().navigate(action)
+//        startActivity(Intent(requireContext(), GameActivity::class.java))
+//        requireActivity().finish()
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN_ORDERED)

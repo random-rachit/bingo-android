@@ -13,12 +13,32 @@
         <action
             android:id="@+id/home_to_lobby"
             app:destination="@id/lobby_fragment" />
+        <action
+            android:id="@+id/home_to_name"
+            app:destination="@id/name_fragment" />
     </fragment>
 
     <fragment
         android:id="@+id/lobby_fragment"
         android:name="com.cafedroid.bingo_android.lobby.LobbyFragment"
         android:label="LobbyFragment"
-        tools:layout="@layout/fragment_lobby" />
+        tools:layout="@layout/fragment_lobby">
+        <action
+            android:id="@+id/lobby_to_game"
+            app:destination="@id/game_fragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/game_fragment"
+        android:name="com.cafedroid.bingo_android.game.GameFragment"
+        android:label="GameFragment"
+        tools:layout="@layout/fragment_game" />
+
+    <fragment
+        android:id="@+id/name_fragment"
+        android:name="com.cafedroid.bingo_android.home.ui.NameFragment"
+        android:label="NameFragment"
+        tools:layout="@layout/fragment_name" >
+    </fragment>
 
 </navigation>

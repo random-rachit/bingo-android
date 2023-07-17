@@ -8,13 +8,6 @@ import com.cafedroid.bingo_android.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
 
-    companion object {
-        const val CREATE_ROOM_REQUEST = 1000
-        const val JOIN_ROOM_REQUEST = 1001
-    }
-
-    private var gameId: String? = null
-
     private lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,48 +16,19 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
     }
 
-    override fun onStart() {
-        super.onStart()
-        intent.data?.lastPathSegment?.let {
-            if (gameId.isNullOrBlank()) {
-                gameId = it
-                startActivityForResult(Intent(this, NameActivity::class.java), JOIN_ROOM_REQUEST)
-            }
-        }
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-//        if (resultCode == Activity.RESULT_OK) {
-//            binding.lottieCreateBtn.isEnabled = false
-//            when (requestCode) {
-//                JOIN_ROOM_REQUEST -> {
-//                    binding.cvBtnCreate.visibility = View.INVISIBLE
-//                    binding.progressBar.visibility = View.VISIBLE
-//                    val user = data?.extras?.getString(NameActivity.USER_KEY) ?: Build.MODEL
-//                    BingoSocket.socket?.let {
-//                        it.emit(SocketAction.ACTION_JOIN, JSONObject().apply {
-//                            put(ApiConstants.ID, gameId)
-//                            put(ApiConstants.USER, user)
-//                        })
-//                    }
-//                }
-//
-//                CREATE_ROOM_REQUEST -> {
-//                    val user = data?.extras?.getString(NameActivity.USER_KEY) ?: Build.MODEL
-//                    BingoSocket.socket?.let {
-//                        it.emit(SocketAction.ACTION_CREATE, JSONObject().apply {
-//                            put(ApiConstants.NAME, binding.etRoom.text.toString().trim())
-//                            put(ApiConstants.USER, user)
-//                        })
-//                    }
-//                }
+//    override fun onStart() {
+//        super.onStart()
+//        intent.data?.lastPathSegment?.let {
+//            if (gameId.isNullOrBlank()) {
+//                gameId = it
+//                startActivityForResult(Intent(this, NameActivity::class.java), JOIN_ROOM_REQUEST)
 //            }
 //        }
-    }
+//    }
 
-    override fun onNewIntent(intent: Intent?) {
-        super.onNewIntent(intent)
+
+//    override fun onNewIntent(intent: Intent?) {
+//        super.onNewIntent(intent)
 //        if (binding.mlActivityMain.currentState == binding.mlActivityMain.endState) {
 //            binding.lottieCreateBtn.pauseAnimation()
 //            binding.lottieCreateBtn.frame = 0
@@ -72,11 +36,11 @@ class MainActivity : AppCompatActivity() {
 //            binding.etRoom.visibility = View.GONE
 //            binding.mlActivityMain.transitionToStart()
 //        }
-        intent?.data?.lastPathSegment?.let {
-            if (gameId.isNullOrBlank()) {
-                gameId = it
-                startActivityForResult(Intent(this, NameActivity::class.java), JOIN_ROOM_REQUEST)
-            }
-        }
-    }
+//        intent?.data?.lastPathSegment?.let {
+//            if (gameId.isNullOrBlank()) {
+//                gameId = it
+//                startActivityForResult(Intent(this, NameActivity::class.java), JOIN_ROOM_REQUEST)
+//            }
+//        }
+//    }
 }

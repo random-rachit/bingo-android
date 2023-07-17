@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/cl_game_view"
-    android:background="@android:color/white"
-    tools:context=".GameActivity">
+    android:background="@android:color/white">
 
     <ImageView
         android:layout_width="match_parent"

@@ -5,15 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white"
-    android:padding="8dp"
-    tools:context=".NameActivity">
+    android:padding="8dp">
 
     <com.cafedroid.bingo_android.CursiveTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:gravity="center"
-        android:text="Pocket Bingo"
+        android:text="@string/app_name"
         android:textColor="@color/colorPrimary"
         android:textSize="36sp"
         android:textStyle="bold"
@@ -26,7 +25,7 @@
         android:layout_height="wrap_content"
         android:background="@android:color/transparent"
         android:gravity="center"
-        android:hint="Enter your name here..."
+        android:hint="@string/enter_name"
         android:imeOptions="actionDone"
         android:inputType="textPersonName"
         android:maxLines="1"
@@ -58,6 +57,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:importantForAccessibility="no"
             app:srcCompat="@drawable/ic_done" />
     </FrameLayout>
 
