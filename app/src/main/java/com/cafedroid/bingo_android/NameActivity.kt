@@ -4,9 +4,10 @@ import android.animation.Animator
 import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
+import androidx.appcompat.app.AppCompatActivity
 import com.cafedroid.bingo_android.databinding.ActivityNameBinding
 
-class NameActivity : BaseActivity() {
+class NameActivity : AppCompatActivity() {
     companion object {
         const val USER_KEY = "user"
     }

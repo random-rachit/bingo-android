@@ -15,11 +15,11 @@ import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AlertDialog
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import androidx.core.content.FileProvider
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.bumptech.glide.Glide
 import com.cafedroid.bingo_android.databinding.ActivityGameBinding
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
@@ -30,7 +30,7 @@ import java.io.FileOutputStream
 import java.io.IOException
 
 
-class GameActivity : BaseActivity() {
+class GameActivity : AppCompatActivity() {
 
     private var mAdapter: GameTableAdapter? = null
     private var eventAdapter: GameEventAdapter? = null

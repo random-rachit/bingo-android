@@ -3,6 +3,7 @@ package com.cafedroid.bingo_android
 import android.content.Context
 import android.graphics.Typeface
 import android.widget.TextView
+import android.widget.Toast
 import com.google.gson.annotations.SerializedName
 import org.greenrobot.eventbus.EventBus
 import org.json.JSONObject
@@ -174,3 +175,7 @@ fun TextView.setCustomFont(context: Context) {
 }
 
 class GameEvent(val user: String, val event: String)
+
+fun Context.showToast(message: String) {
+    Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
+}

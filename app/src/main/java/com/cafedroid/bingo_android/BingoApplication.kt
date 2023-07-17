@@ -1,8 +1,8 @@
 package com.cafedroid.bingo_android
 
-import android.app.Application
+import androidx.multidex.MultiDexApplication
 
-class BingoApplication : Application() {
+class BingoApplication : MultiDexApplication() {
 
     override fun onCreate() {
         super.onCreate()

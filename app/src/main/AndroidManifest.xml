@@ -31,8 +31,6 @@
 
         <activity android:name=".GameActivity" />
         <activity android:name=".NameActivity" />
-        <activity android:name=".LobbyActivity" />
-        <activity android:name=".BaseActivity" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
